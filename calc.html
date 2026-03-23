@@ -350,6 +350,45 @@
             border-radius: 6px;
             font-size: 12px;
         }
+
+        .bonus-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #d4edda;
+            position: relative;
+        }
+
+        .bonus-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #d4edda;
+        }
+
+        .bonus-card-title {
+            font-weight: 600;
+            color: #155724;
+        }
+
+        .bonus-card-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .bonus-card-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .badge-bonus {
+            background: #6f42c1;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -404,7 +443,11 @@
                 <div id="paydaysContainer" class="payday-inputs">
                     <!-- Выплаты будут добавляться сюда динамически -->
                 </div>
-                <button class="btn btn-outline-success btn-sm" id="addPaydayBtn" style="margin-top: 15px;">+ Добавить выплату</button>
+                <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
+                    <button class="btn btn-outline-success btn-sm" id="addPaydayBtn">+ Добавить выплату</button>
+                    <button class="btn btn-sm" id="addBonusBtn" style="background:transparent; border:2px solid #6f42c1; color:#6f42c1;">+ Добавить премию</button>
+                </div>
+                <div id="bonusesContainer" class="payday-inputs" style="margin-top:15px;"></div>
                 <div class="info-box" style="margin-top:15px;">
                     <strong>📌 Как это работает (автоматически):</strong><br>
                     • <strong>Выплаты до 15 числа</strong> (включительно) — начисляются за <strong>предыдущий месяц</strong><br>
@@ -492,6 +535,7 @@
         };
 
         let paydayCounter = 2;
+        let bonusCounter = 0;
 
         function updateScheduleInfo() {
             const type = document.getElementById('scheduleType').value;
@@ -588,6 +632,71 @@
                     updatePaydayInfo(idx);
                 }
             });
+        }
+
+        function renderBonuses() {
+            const container = document.getElementById('bonusesContainer');
+            if (bonusCounter === 0) { container.innerHTML = ''; return; }
+            let html = '';
+            for (let i = 1; i <= bonusCounter; i++) {
+                html += `
+                    <div class="bonus-card" data-bonus-idx="${i}">
+                        <div class="bonus-card-header">
+                            <span class="bonus-card-title">🎁 Премия ${i}</span>
+                            <button class="btn-remove" onclick="removeBonus(${i})">✕ Удалить</button>
+                        </div>
+                        <div class="bonus-card-fields">
+                            <div class="payday-field">
+                                <label>📅 Дата выплаты (число)</label>
+                                <input type="number" id="bonusDate${i}" value="10" min="1" max="31" step="1">
+                            </div>
+                            <div class="payday-field">
+                                <label>💹 Процент от оклада (%)</label>
+                                <input type="number" id="bonusPct${i}" value="10" min="0" max="1000" step="1">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function getBonusValues() {
+            const values = [];
+            for (let i = 1; i <= bonusCounter; i++) {
+                const dateEl = document.getElementById(`bonusDate${i}`);
+                const pctEl = document.getElementById(`bonusPct${i}`);
+                if (dateEl) values.push({ bonusDate: dateEl.value, bonusPct: pctEl.value });
+            }
+            return values;
+        }
+
+        function setBonusValues(values) {
+            values.forEach((v, i) => {
+                const idx = i + 1;
+                const dateEl = document.getElementById(`bonusDate${idx}`);
+                const pctEl = document.getElementById(`bonusPct${idx}`);
+                if (dateEl) { dateEl.value = v.bonusDate; pctEl.value = v.bonusPct; }
+            });
+        }
+
+        function addBonus() {
+            if (bonusCounter < 10) {
+                const values = getBonusValues();
+                bonusCounter++;
+                renderBonuses();
+                setBonusValues(values);
+            }
+        }
+
+        function removeBonus(idx) {
+            if (bonusCounter > 0) {
+                const values = getBonusValues();
+                values.splice(idx - 1, 1);
+                bonusCounter--;
+                renderBonuses();
+                setBonusValues(values);
+            }
         }
 
         function addPayday() {
@@ -807,13 +916,33 @@
             });
             
             const totalAmount = validPayments.reduce((sum, p) => sum + p.amount, 0);
-            
+
+            // Собираем премии
+            const monthNames2 = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+            const bonuses = [];
+            for (let i = 1; i <= bonusCounter; i++) {
+                const bonusDate = parseInt(document.getElementById(`bonusDate${i}`).value);
+                const bonusPct = parseFloat(document.getElementById(`bonusPct${i}`).value);
+                if (isNaN(bonusDate) || isNaN(bonusPct) || bonusPct <= 0) continue;
+                const lastDay = getLastDayOfMonth(year, month);
+                if (bonusDate < 1 || bonusDate > lastDay) continue;
+                const amount = salary * bonusPct / 100;
+                bonuses.push({
+                    bonusDate,
+                    bonusDisplay: `${bonusDate} ${monthNames2[month]}`,
+                    bonusPct,
+                    amount
+                });
+            }
+            const totalBonusAmount = bonuses.reduce((sum, b) => sum + b.amount, 0);
+            const grandTotal = totalAmount + totalBonusAmount;
+
             // Отображение результатов
             document.getElementById('results').style.display = 'block';
             document.getElementById('workDays').textContent = totalMonthWorkDays;
             document.getElementById('dailyRate').textContent = Math.round(dailyRate).toLocaleString('ru-RU') + ' ₽';
-            document.getElementById('totalPayments').textContent = Math.round(totalAmount).toLocaleString('ru-RU') + ' ₽';
-            document.getElementById('paymentCountResult').textContent = validPayments.length;
+            document.getElementById('totalPayments').textContent = Math.round(grandTotal).toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('paymentCountResult').textContent = validPayments.length + bonuses.length;
             
             const monthStart = new Date(year, month, 1);
             const startInfo = workStartDate > monthStart ?
@@ -840,9 +969,18 @@
                         </div>
                     `;
                 });
-            } else {
+            } else if (bonuses.length === 0) {
                 detailsHtml += '<div class="payment-detail-card">Нет выплат в этом периоде</div>';
             }
+            bonuses.forEach(b => {
+                detailsHtml += `
+                    <div class="payment-detail-card">
+                        <strong>🎁 Премия ${b.bonusDisplay} <span class="badge badge-bonus">Премия</span></strong><br>
+                        💹 Процент от оклада: ${b.bonusPct}%<br>
+                        💰 Сумма: ${Math.round(b.amount).toLocaleString('ru-RU')} ₽
+                    </div>
+                `;
+            });
             document.getElementById('paymentDetails').innerHTML = detailsHtml;
             
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
@@ -851,7 +989,9 @@
         function resetForm() {
             document.getElementById('salary').value = '';
             paydayCounter = 2;
+            bonusCounter = 0;
             renderPaydays();
+            renderBonuses();
             document.getElementById('results').style.display = 'none';
         }
         
@@ -874,9 +1014,11 @@
             }
             
             renderPaydays();
+            renderBonuses();
             updateScheduleInfo();
-            
+
             document.getElementById('addPaydayBtn').onclick = addPayday;
+            document.getElementById('addBonusBtn').onclick = addBonus;
         });
     </script>
 </body>
