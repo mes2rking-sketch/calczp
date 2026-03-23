@@ -505,12 +505,20 @@
                         <div class="value" id="dailyRate">0 ₽</div>
                     </div>
                     <div class="result-item">
-                        <div class="label">Сумма всех выплат</div>
+                        <div class="label">Сумма выплат в периоде</div>
                         <div class="value" id="totalPayments">0 ₽</div>
                     </div>
                     <div class="result-item">
                         <div class="label">Выплат в периоде</div>
                         <div class="value" id="paymentCountResult">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Выплачено с начала работы</div>
+                        <div class="value" id="cumulativePayments">0 ₽</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Прогноз дохода за год</div>
+                        <div class="value" id="annualProjection">0 ₽</div>
                     </div>
                 </div>
                 <div class="calendar-info" id="calendarInfo"></div>
@@ -784,6 +792,49 @@
             return getWorkDaysInPeriod(start, end, scheduleType, workStartDate, true);
         }
 
+        // Считает сумму всех выплат (зп + премии) за один месяц по заданным настройкам
+        function computeMonthTotal(year, month, salary, scheduleType, workStartDateStr, paydaySettings, bonusSettings) {
+            const totalMonthWorkDays = getMonthWorkDays(year, month, scheduleType, workStartDateStr);
+            if (totalMonthWorkDays === 0) return 0;
+
+            let total = 0;
+
+            for (let s of paydaySettings) {
+                let { paydayDate, periodStart, periodEnd } = s;
+                const lastDayOfMonth = getLastDayOfMonth(year, month);
+                if (paydayDate < 1 || paydayDate > lastDayOfMonth) continue;
+
+                let periodYear = year, periodMonth = month;
+                if (paydayDate <= 15) {
+                    if (month === 0) { periodYear = year - 1; periodMonth = 11; }
+                    else { periodMonth = month - 1; }
+                }
+
+                const lastDayOfPeriodMonth = getLastDayOfMonth(periodYear, periodMonth);
+                if (periodEnd > lastDayOfPeriodMonth) periodEnd = lastDayOfPeriodMonth;
+
+                const periodStartDate = new Date(periodYear, periodMonth, periodStart);
+                const periodEndDate = new Date(periodYear, periodMonth, periodEnd);
+                if (periodStartDate > periodEndDate) continue;
+
+                const workDaysInPeriod = getWorkDaysInPeriod(periodStartDate, periodEndDate, scheduleType, workStartDateStr);
+                if (workDaysInPeriod === 0) continue;
+
+                const periodTotalWorkDays = getMonthWorkDays(periodYear, periodMonth, scheduleType, workStartDateStr);
+                if (periodTotalWorkDays === 0) continue;
+
+                total += (salary / periodTotalWorkDays) * workDaysInPeriod;
+            }
+
+            for (let b of bonusSettings) {
+                const lastDay = getLastDayOfMonth(year, month);
+                if (b.bonusDate < 1 || b.bonusDate > lastDay) continue;
+                total += salary * b.bonusPct / 100;
+            }
+
+            return total;
+        }
+
         function calculate() {
             const scheduleType = document.getElementById('scheduleType').value;
             const salary = parseFloat(document.getElementById('salary').value);
@@ -937,12 +988,56 @@
             const totalBonusAmount = bonuses.reduce((sum, b) => sum + b.amount, 0);
             const grandTotal = totalAmount + totalBonusAmount;
 
+            // Собираем настройки выплат и премий для вспомогательных расчётов
+            const paydaySettings = [];
+            for (let i = 1; i <= paydayCounter; i++) {
+                const pd = parseInt(document.getElementById(`paydayDate${i}`).value);
+                const ps = parseInt(document.getElementById(`periodStart${i}`).value);
+                const pe = parseInt(document.getElementById(`periodEnd${i}`).value);
+                if (!isNaN(pd) && !isNaN(ps) && !isNaN(pe)) paydaySettings.push({ paydayDate: pd, periodStart: ps, periodEnd: pe });
+            }
+            const bonusSettings = [];
+            for (let i = 1; i <= bonusCounter; i++) {
+                const bd = parseInt(document.getElementById(`bonusDate${i}`).value);
+                const bp = parseFloat(document.getElementById(`bonusPct${i}`).value);
+                if (!isNaN(bd) && !isNaN(bp) && bp > 0) bonusSettings.push({ bonusDate: bd, bonusPct: bp });
+            }
+
+            // Показатель 1: сумма выплаченного с начала работы до сегодня
+            // (для текущего месяца — только выплаты, чья дата уже прошла)
+            const today = new Date();
+            const todayDay = today.getDate();
+            const todayMonth = today.getMonth();
+            const todayYear = today.getFullYear();
+            let cumulative = 0;
+            let curYear = workStartDate.getFullYear(), curMonth = workStartDate.getMonth();
+            while (curYear < todayYear || (curYear === todayYear && curMonth <= todayMonth)) {
+                const isPastMonth = curYear < todayYear || curMonth < todayMonth;
+                const filteredPaydays = isPastMonth
+                    ? paydaySettings
+                    : paydaySettings.filter(s => s.paydayDate <= todayDay);
+                const filteredBonuses = isPastMonth
+                    ? bonusSettings
+                    : bonusSettings.filter(b => b.bonusDate <= todayDay);
+                cumulative += computeMonthTotal(curYear, curMonth, salary, scheduleType, workStartDateStr, filteredPaydays, filteredBonuses);
+                curMonth++;
+                if (curMonth > 11) { curMonth = 0; curYear++; }
+            }
+
+            // Показатель 2: прогнозируемый суммарный доход за выбранный год
+            let annual = 0;
+            for (let m = 0; m < 12; m++) {
+                annual += computeMonthTotal(year, m, salary, scheduleType, workStartDateStr, paydaySettings, bonusSettings);
+            }
+
             // Отображение результатов
             document.getElementById('results').style.display = 'block';
             document.getElementById('workDays').textContent = totalMonthWorkDays;
             document.getElementById('dailyRate').textContent = Math.round(dailyRate).toLocaleString('ru-RU') + ' ₽';
             document.getElementById('totalPayments').textContent = Math.round(grandTotal).toLocaleString('ru-RU') + ' ₽';
             document.getElementById('paymentCountResult').textContent = validPayments.length + bonuses.length;
+            document.getElementById('cumulativePayments').textContent = Math.round(cumulative).toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('annualProjection').textContent = Math.round(annual).toLocaleString('ru-RU') + ' ₽';
             
             const monthStart = new Date(year, month, 1);
             const startInfo = workStartDate > monthStart ?
