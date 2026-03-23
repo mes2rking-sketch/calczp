@@ -815,23 +815,11 @@
             document.getElementById('totalPayments').textContent = Math.round(totalAmount).toLocaleString('ru-RU') + ' ₽';
             document.getElementById('paymentCountResult').textContent = validPayments.length;
             
-            // Информация о праздниках
             const monthStart = new Date(year, month, 1);
-            const monthEnd = new Date(year, month + 1, 0);
-            let holidayCount = 0;
-            let current = new Date(monthStart);
-            const workStartForCheck = new Date(workStartDateStr);
-            while (current <= monthEnd) {
-                if (current >= workStartForCheck) {
-                    const dateStr = current.toISOString().split('T')[0];
-                    if (isHoliday(dateStr, year)) holidayCount++;
-                }
-                current.setDate(current.getDate() + 1);
-            }
-            
-            const startInfo = workStartDate > monthStart ? 
-                `<strong>📅 Начало работы:</strong> ${workStartDate.toLocaleDateString('ru-RU')}<br>` : '';
-            document.getElementById('calendarInfo').innerHTML = startInfo + (holidayCount > 0 ? `<strong>🎉 Праздничных дней в месяце (после начала работы):</strong> ${holidayCount}` : 'Праздничных дней в этом месяце нет');
+            const startInfo = workStartDate > monthStart ?
+                `<strong>📅 Начало работы:</strong> ${workStartDate.toLocaleDateString('ru-RU')}` : '';
+            document.getElementById('calendarInfo').innerHTML = startInfo;
+            document.getElementById('calendarInfo').style.display = startInfo ? '' : 'none';
             
             // Детали выплат
             let detailsHtml = '<strong>📅 Детали выплат:</strong><br><br>';
