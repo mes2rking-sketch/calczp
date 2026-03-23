@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор выплат зарплаты</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #3498db;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .payday-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .payday-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #e9ecef;
+            position: relative;
+        }
+
+        .payday-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .payday-card-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .payday-card-fields {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .payday-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .payday-field label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #6c757d;
+            margin-bottom: 4px;
+        }
+
+        .payday-field input {
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+        }
+
+        .payday-info {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #6c757d;
+            padding: 5px 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .btn-remove:hover {
+            background: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .payday-card-fields {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-outline-success {
+            background: transparent;
+            border: 2px solid #28a745;
+            color: #28a745;
+        }
+
+        .btn-outline-success:hover {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .results {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .results h3 {
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .result-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .result-item .label {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .result-item .value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .calendar-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        .info-box li {
+            margin-bottom: 3px;
+        }
+
+        .payment-detail-card {
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .badge-prev {
+            background: #ffc107;
+            color: #856404;
+        }
+
+        .badge-current {
+            background: #28a745;
+            color: white;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Калькулятор выплат зарплаты</h1>
+            <p>Автоматическое определение: выплаты до 15 числа идут за предыдущий месяц, после 15 — за текущий</p>
+        </div>
+
+        <div class="content">
+            <!-- График работы -->
+            <div class="section">
+                <div class="section-title">График работы</div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="scheduleType">Тип графика</label>
+                        <select id="scheduleType" onchange="updateScheduleInfo()">
+                            <option value="5_2">5/2 (пятидневка, выходные сб-вс)</option>
+                            <option value="6_1">6/1 (шестидневка, выходной вс)</option>
+                            <option value="2_2">2/2 (два через два)</option>
+                            <option value="3_3">3/3 (три через три)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="workStartDate">Дата начала работы</label>
+                        <input type="date" id="workStartDate">
+                        <small style="color: #6c757d; display: block; margin-top: 5px;">Если сотрудник начал работать не с начала месяца, зарплата будет рассчитана только за отработанные дни</small>
+                    </div>
+                </div>
+                <div class="info-box" id="scheduleInfo">
+                    <strong>ℹ️ Информация о графике 5/2:</strong>
+                    <ul>
+                        <li>Рабочие дни: понедельник - пятница</li>
+                        <li>Выходные: суббота, воскресенье</li>
+                        <li>Учитываются официальные праздники РФ</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Зарплата -->
+            <div class="section">
+                <div class="section-title">Зарплата</div>
+                <div class="form-group">
+                    <label for="salary">Оклад за полностью отработанный месяц (нетто, после вычета налогов)</label>
+                    <input type="number" id="salary" placeholder="Например: 50000" min="0" step="1000">
+                </div>
+            </div>
+
+            <!-- Даты выплат -->
+            <div class="section">
+                <div class="section-title">Настройка выплат</div>
+                <div id="paydaysContainer" class="payday-inputs">
+                    <!-- Выплаты будут добавляться сюда динамически -->
+                </div>
+                <button class="btn btn-outline-success btn-sm" id="addPaydayBtn" style="margin-top: 15px;">+ Добавить выплату</button>
+                <div class="info-box" style="margin-top:15px;">
+                    <strong>📌 Как это работает (автоматически):</strong><br>
+                    • <strong>Выплаты до 15 числа</strong> (включительно) — начисляются за <strong>предыдущий месяц</strong><br>
+                    • <strong>Выплаты после 15 числа</strong> — начисляются за <strong>текущий месяц</strong><br><br>
+                    <strong>Пример стандартной схемы:</strong><br>
+                    • 5 число → выплата за предыдущий месяц (период 16-31)<br>
+                    • 20 число → выплата за текущий месяц (период 1-15)
+                </div>
+            </div>
+
+            <!-- Период расчета -->
+            <div class="section">
+                <div class="section-title">Период расчета</div>
+                <div class="row">
+                    <div class="form-group">
+                        <label for="calcMonth">Месяц выплат</label>
+                        <select id="calcMonth">
+                            <option value="1">Январь</option>
+                            <option value="2">Февраль</option>
+                            <option value="3">Март</option>
+                            <option value="4">Апрель</option>
+                            <option value="5">Май</option>
+                            <option value="6">Июнь</option>
+                            <option value="7">Июль</option>
+                            <option value="8">Август</option>
+                            <option value="9">Сентябрь</option>
+                            <option value="10">Октябрь</option>
+                            <option value="11">Ноябрь</option>
+                            <option value="12">Декабрь</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="calcYear">Год</label>
+                        <select id="calcYear"></select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопка расчета -->
+            <div class="actions">
+                <button class="btn btn-primary" onclick="calculate()">📊 Рассчитать</button>
+                <button class="btn btn-secondary" onclick="resetForm()">🔄 Сбросить</button>
+            </div>
+
+            <!-- Результаты -->
+            <div class="results" id="results" style="display:none;">
+                <h3>📈 Результаты расчета</h3>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <div class="label">Рабочих дней в месяце</div>
+                        <div class="value" id="workDays">0</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Ставка за день</div>
+                        <div class="value" id="dailyRate">0 ₽</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Сумма всех выплат</div>
+                        <div class="value" id="totalPayments">0 ₽</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="label">Выплат в периоде</div>
+                        <div class="value" id="paymentCountResult">0</div>
+                    </div>
+                </div>
+                <div class="calendar-info" id="calendarInfo"></div>
+                <div id="paymentDetails" style="margin-top:15px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Производственный календарь РФ
+        const holidays = {
+            2024: ['2024-01-01','2024-01-02','2024-01-03','2024-01-04','2024-01-05','2024-01-06','2024-01-07','2024-01-08','2024-02-23','2024-03-08','2024-05-01','2024-05-09','2024-06-12','2024-11-04'],
+            2025: ['2025-01-01','2025-01-02','2025-01-03','2025-01-04','2025-01-05','2025-01-06','2025-01-07','2025-02-23','2025-03-08','2025-05-01','2025-05-09','2025-06-12','2025-11-04'],
+            2026: ['2026-01-01','2026-01-02','2026-01-03','2026-01-04','2026-01-05','2026-02-23','2026-03-08','2026-05-01','2026-05-09','2026-06-12','2026-11-04']
+        };
+
+        const scheduleInfoText = {
+            '5_2': { title: '5/2', desc: 'Рабочие: пн-пт, выходные: сб-вс' },
+            '6_1': { title: '6/1', desc: 'Рабочие: пн-сб, выходной: вс' },
+            '2_2': { title: '2/2', desc: '2 дня работы, 2 дня отдыха (цикл 4 дня)' },
+            '3_3': { title: '3/3', desc: '3 дня работы, 3 дня отдыха (цикл 6 дней)' }
+        };
+
+        let paydayCounter = 2;
+
+        function updateScheduleInfo() {
+            const type = document.getElementById('scheduleType').value;
+            const info = scheduleInfoText[type];
+            document.getElementById('scheduleInfo').innerHTML = `
+                <strong>ℹ️ График ${info.title}</strong>
+                <ul><li>${info.desc}</li><li>Учитываются официальные праздники РФ</li>${type === '2_2' || type === '3_3' ? '<li><strong>Важно:</strong> для сменных графиков используется дата начала работы для определения циклов</li>' : ''}</ul>
+            `;
+        }
+
+        function getLastDayOfMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+
+        function renderPaydays() {
+            const container = document.getElementById('paydaysContainer');
+            const count = paydayCounter;
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth();
+            const defaultEnd = getLastDayOfMonth(currentYear, currentMonth);
+            
+            let html = '';
+            for (let i = 1; i <= count; i++) {
+                const defaultPayday = i === 1 ? 5 : 20;
+                const defaultStart = i === 1 ? 16 : 1;
+                const defaultPeriodEnd = i === 1 ? defaultEnd : 15;
+                
+                html += `
+                    <div class="payday-card" data-idx="${i}">
+                        <div class="payday-card-header">
+                            <span class="payday-card-title">Выплата ${i}</span>
+                            ${i > 1 ? `<button class="btn-remove" onclick="removePayday(${i})">✕ Удалить</button>` : ''}
+                        </div>
+                        <div class="payday-card-fields">
+                            <div class="payday-field">
+                                <label>📅 Дата выплаты (число)</label>
+                                <input type="number" id="paydayDate${i}" value="${defaultPayday}" min="1" max="31" step="1" onchange="updatePaydayInfo(${i})">
+                            </div>
+                            <div class="payday-field">
+                                <label>📆 Период с (число)</label>
+                                <input type="number" id="periodStart${i}" value="${defaultStart}" min="1" max="31" step="1">
+                            </div>
+                            <div class="payday-field">
+                                <label>📆 Период по (число)</label>
+                                <input type="number" id="periodEnd${i}" value="${defaultPeriodEnd}" min="1" max="31" step="1">
+                            </div>
+                        </div>
+                        <div class="payday-info" id="paydayInfo${i}">
+                            ${defaultPayday <= 15 ? '📅 Выплата до 15 числа → за ПРЕДЫДУЩИЙ месяц' : '📅 Выплата после 15 числа → за ТЕКУЩИЙ месяц'}
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+        
+        function updatePaydayInfo(idx) {
+            const paydayDate = parseInt(document.getElementById(`paydayDate${idx}`).value);
+            const infoDiv = document.getElementById(`paydayInfo${idx}`);
+            if (paydayDate <= 15) {
+                infoDiv.innerHTML = '📅 Выплата до 15 числа → за ПРЕДЫДУЩИЙ месяц';
+                infoDiv.style.background = '#fff3cd';
+                infoDiv.style.color = '#856404';
+            } else {
+                infoDiv.innerHTML = '📅 Выплата после 15 числа → за ТЕКУЩИЙ месяц';
+                infoDiv.style.background = '#d4edda';
+                infoDiv.style.color = '#155724';
+            }
+        }
+
+        function getPaydayValues() {
+            const values = [];
+            for (let i = 1; i <= paydayCounter; i++) {
+                const dateEl = document.getElementById(`paydayDate${i}`);
+                const startEl = document.getElementById(`periodStart${i}`);
+                const endEl = document.getElementById(`periodEnd${i}`);
+                if (dateEl) {
+                    values.push({ paydayDate: dateEl.value, periodStart: startEl.value, periodEnd: endEl.value });
+                }
+            }
+            return values;
+        }
+
+        function setPaydayValues(values) {
+            values.forEach((v, i) => {
+                const idx = i + 1;
+                const dateEl = document.getElementById(`paydayDate${idx}`);
+                const startEl = document.getElementById(`periodStart${idx}`);
+                const endEl = document.getElementById(`periodEnd${idx}`);
+                if (dateEl) {
+                    dateEl.value = v.paydayDate;
+                    startEl.value = v.periodStart;
+                    endEl.value = v.periodEnd;
+                    updatePaydayInfo(idx);
+                }
+            });
+        }
+
+        function addPayday() {
+            if (paydayCounter < 10) {
+                const values = getPaydayValues();
+                paydayCounter++;
+                renderPaydays();
+                setPaydayValues(values);
+            }
+        }
+
+        function removePayday(idx) {
+            if (paydayCounter > 1) {
+                const values = getPaydayValues();
+                values.splice(idx - 1, 1);
+                paydayCounter--;
+                renderPaydays();
+                setPaydayValues(values);
+            }
+        }
+
+        function isHoliday(dateStr, year) {
+            return (holidays[year] || []).includes(dateStr);
+        }
+
+        function isWeekendBySchedule(date, scheduleType) {
+            const day = date.getDay();
+            if (scheduleType === '5_2') return day === 0 || day === 6;
+            if (scheduleType === '6_1') return day === 0;
+            return false;
+        }
+
+        // Функция для подсчета рабочих дней в периоде с учетом даты начала работы.
+        // ignoreWorkStart=true: считать с начала периода (для знаменателя дневной ставки — полный месяц)
+        // ignoreWorkStart=false (по умолчанию): клипировать период по дате начала работы (для числителя — фактически отработанные дни)
+        function getWorkDaysInPeriod(startDate, endDate, scheduleType, workStartDate, ignoreWorkStart) {
+            let workDays = 0;
+            let current = new Date(startDate);
+            const end = new Date(endDate);
+            const workStart = new Date(workStartDate);
+
+            if (!ignoreWorkStart) {
+                // Если период заканчивается до начала работы, возвращаем 0
+                if (end < workStart) return 0;
+            }
+
+            // Корректируем начало периода по дате начала работы (если нужно)
+            const actualStart = (!ignoreWorkStart && current < workStart) ? new Date(workStart) : new Date(current);
+
+            if (scheduleType === '2_2' || scheduleType === '3_3') {
+                const cycleLength = scheduleType === '2_2' ? 4 : 6;
+                const workDaysPerCycle = scheduleType === '2_2' ? 2 : 3;
+                const startRef = new Date(workStartDate);
+                const diffDays = Math.floor((actualStart - startRef) / (1000 * 60 * 60 * 24));
+                let cycleDay = ((diffDays % cycleLength) + cycleLength) % cycleLength;
+
+                let tempDate = new Date(actualStart);
+                while (tempDate <= end) {
+                    const isWork = cycleDay < workDaysPerCycle;
+                    if (isWork) workDays++;
+                    cycleDay = (cycleDay + 1) % cycleLength;
+                    tempDate.setDate(tempDate.getDate() + 1);
+                }
+            } else {
+                let tempDate = new Date(actualStart);
+                while (tempDate <= end) {
+                    const dateStr = tempDate.toISOString().split('T')[0];
+                    const year = tempDate.getFullYear();
+                    const isHolidayDay = isHoliday(dateStr, year);
+                    const isWeekendDay = isWeekendBySchedule(tempDate, scheduleType);
+
+                    if (!isHolidayDay && !isWeekendDay) {
+                        workDays++;
+                    }
+                    tempDate.setDate(tempDate.getDate() + 1);
+                }
+            }
+            return workDays;
+        }
+
+        // Полное количество рабочих дней в месяце (знаменатель для дневной ставки — не зависит от даты начала работы)
+        function getMonthWorkDays(year, month, scheduleType, workStartDate) {
+            const start = new Date(year, month, 1);
+            const end = new Date(year, month + 1, 0);
+            return getWorkDaysInPeriod(start, end, scheduleType, workStartDate, true);
+        }
+
+        function calculate() {
+            const scheduleType = document.getElementById('scheduleType').value;
+            const salary = parseFloat(document.getElementById('salary').value);
+            const workStartDateStr = document.getElementById('workStartDate').value;
+            const calcMonth = parseInt(document.getElementById('calcMonth').value);
+            const calcYear = parseInt(document.getElementById('calcYear').value);
+            
+            if (!salary || salary <= 0) {
+                alert('Пожалуйста, укажите оклад');
+                return;
+            }
+            
+            if (!workStartDateStr) {
+                alert('Пожалуйста, укажите дату начала работы');
+                return;
+            }
+            
+            const workStartDate = new Date(workStartDateStr);
+            const year = calcYear;
+            const month = calcMonth - 1;
+            
+            // Полное количество рабочих дней в месяце (знаменатель для дневной ставки)
+            const totalMonthWorkDays = getMonthWorkDays(year, month, scheduleType, workStartDateStr);
+
+            // Фактически доступные дни сотрудника в месяце (с учётом даты начала работы) — для валидации
+            const employeeMonthDays = getWorkDaysInPeriod(
+                new Date(year, month, 1), new Date(year, month + 1, 0),
+                scheduleType, workStartDateStr
+            );
+            if (employeeMonthDays === 0) {
+                const monthNames = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне', 'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
+                alert(`В ${monthNames[month]} нет рабочих дней для сотрудника, начавшего работу ${workStartDate.toLocaleDateString('ru-RU')}`);
+                return;
+            }
+
+            const dailyRate = salary / totalMonthWorkDays;
+            
+            // Собираем настройки выплат
+            const payments = [];
+            for (let i = 1; i <= paydayCounter; i++) {
+                const paydayDate = parseInt(document.getElementById(`paydayDate${i}`).value);
+                let periodStart = parseInt(document.getElementById(`periodStart${i}`).value);
+                let periodEnd = parseInt(document.getElementById(`periodEnd${i}`).value);
+                
+                if (isNaN(paydayDate) || isNaN(periodStart) || isNaN(periodEnd)) continue;
+                
+                // Проверяем, попадает ли дата выплаты в выбранный месяц
+                const lastDayOfMonth = getLastDayOfMonth(year, month);
+                if (paydayDate < 1 || paydayDate > lastDayOfMonth) continue;
+                
+                // ОПРЕДЕЛЯЕМ МЕСЯЦ ПЕРИОДА АВТОМАТИЧЕСКИ:
+                // Если дата выплаты <= 15 → за предыдущий месяц
+                // Если дата выплаты > 15 → за текущий месяц
+                let periodYear = year;
+                let periodMonth = month;
+                
+                if (paydayDate <= 15) {
+                    // Выплата за предыдущий месяц
+                    if (month === 0) {
+                        periodYear = year - 1;
+                        periodMonth = 11;
+                    } else {
+                        periodMonth = month - 1;
+                    }
+                }
+                // иначе выплата за текущий месяц — periodMonth и periodYear остаются без изменений
+                
+                // Корректируем periodEnd, если он больше последнего дня месяца периода
+                const lastDayOfPeriodMonth = getLastDayOfMonth(periodYear, periodMonth);
+                if (periodEnd > lastDayOfPeriodMonth) {
+                    periodEnd = lastDayOfPeriodMonth;
+                }
+                
+                // Создаем даты периода
+                let periodStartDate, periodEndDate;
+                try {
+                    periodStartDate = new Date(periodYear, periodMonth, periodStart);
+                    periodEndDate = new Date(periodYear, periodMonth, periodEnd);
+                    
+                    // Проверяем валидность дат
+                    if (periodStartDate > periodEndDate) continue;
+                } catch(e) {
+                    continue;
+                }
+                
+                // Считаем рабочие дни в периоде с учетом даты начала работы
+                const workDaysInPeriod = getWorkDaysInPeriod(periodStartDate, periodEndDate, scheduleType, workStartDateStr);
+
+                // Если нет рабочих дней в периоде, пропускаем выплату
+                if (workDaysInPeriod === 0) continue;
+
+                // Дневная ставка считается по рабочим дням месяца ПЕРИОДА, а не месяца выплаты
+                const periodTotalWorkDays = getMonthWorkDays(periodYear, periodMonth, scheduleType, workStartDateStr);
+                const periodDailyRate = periodTotalWorkDays > 0 ? salary / periodTotalWorkDays : 0;
+                const amount = periodDailyRate * workDaysInPeriod;
+                
+                const monthNames = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+                
+                // Проверяем, была ли частичная отработка периода
+                const isPartialPeriod = workStartDate > periodStartDate;
+                let periodNote = '';
+                if (isPartialPeriod) {
+                    const startWorkFormatted = workStartDate.toLocaleDateString('ru-RU');
+                    periodNote = `<br><small style="opacity:0.8;">⚠️ Учтены только дни с ${startWorkFormatted} (начало работы)</small>`;
+                }
+                
+                const isForPrevMonth = paydayDate <= 15;
+                
+                payments.push({
+                    paydayDate: paydayDate,
+                    paydayDisplay: `${paydayDate} ${monthNames[month]}`,
+                    periodStart: periodStart,
+                    periodEnd: periodEnd,
+                    periodMonth: monthNames[periodMonth],
+                    periodYear: periodYear,
+                    workDays: workDaysInPeriod,
+                    periodTotalWorkDays: periodTotalWorkDays,
+                    periodDailyRate: periodDailyRate,
+                    amount: amount,
+                    note: periodNote,
+                    isPartial: isPartialPeriod,
+                    isForPrevMonth: isForPrevMonth
+                });
+            }
+            
+            // Фильтруем выплаты, которые относятся к выбранному месяцу по дате выплаты
+            const validPayments = payments.filter(p => {
+                const paydayDateObj = new Date(year, month, p.paydayDate);
+                return paydayDateObj.getMonth() === month && paydayDateObj.getFullYear() === year;
+            });
+            
+            const totalAmount = validPayments.reduce((sum, p) => sum + p.amount, 0);
+            
+            // Отображение результатов
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('workDays').textContent = totalMonthWorkDays;
+            document.getElementById('dailyRate').textContent = Math.round(dailyRate).toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('totalPayments').textContent = Math.round(totalAmount).toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('paymentCountResult').textContent = validPayments.length;
+            
+            // Информация о праздниках
+            const monthStart = new Date(year, month, 1);
+            const monthEnd = new Date(year, month + 1, 0);
+            let holidayCount = 0;
+            let current = new Date(monthStart);
+            const workStartForCheck = new Date(workStartDateStr);
+            while (current <= monthEnd) {
+                if (current >= workStartForCheck) {
+                    const dateStr = current.toISOString().split('T')[0];
+                    if (isHoliday(dateStr, year)) holidayCount++;
+                }
+                current.setDate(current.getDate() + 1);
+            }
+            
+            const startInfo = workStartDate > monthStart ? 
+                `<strong>📅 Начало работы:</strong> ${workStartDate.toLocaleDateString('ru-RU')}<br>` : '';
+            document.getElementById('calendarInfo').innerHTML = startInfo + (holidayCount > 0 ? `<strong>🎉 Праздничных дней в месяце (после начала работы):</strong> ${holidayCount}` : 'Праздничных дней в этом месяце нет');
+            
+            // Детали выплат
+            let detailsHtml = '<strong>📅 Детали выплат:</strong><br><br>';
+            if (validPayments.length > 0) {
+                validPayments.forEach(p => {
+                    const periodBadge = p.isForPrevMonth ? 
+                        '<span class="badge badge-prev">За предыдущий месяц</span>' : 
+                        '<span class="badge badge-current">За текущий месяц</span>';
+                    const partialWarning = p.isPartial ? '<span style="background:#ffc107; color:#856404; padding:2px 6px; border-radius:12px; font-size:11px; margin-left:8px;">Частичный период</span>' : '';
+                    detailsHtml += `
+                        <div class="payment-detail-card">
+                            <strong>💰 Выплата ${p.paydayDisplay} ${periodBadge} ${partialWarning}</strong><br>
+                            📆 За период: с ${p.periodStart} по ${p.periodEnd} ${p.periodMonth} ${p.periodYear !== year ? p.periodYear : ''}<br>
+                            📊 Рабочих дней в месяце периода: ${p.periodTotalWorkDays} | Ставка за день: ${Math.round(p.periodDailyRate).toLocaleString('ru-RU')} ₽<br>
+                            📊 Рабочих дней в периоде: ${p.workDays}<br>
+                            💰 Сумма: ${Math.round(p.amount).toLocaleString('ru-RU')} ₽
+                            ${p.note}
+                        </div>
+                    `;
+                });
+            } else {
+                detailsHtml += '<div class="payment-detail-card">Нет выплат в этом периоде</div>';
+            }
+            document.getElementById('paymentDetails').innerHTML = detailsHtml;
+            
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function resetForm() {
+            document.getElementById('salary').value = '';
+            paydayCounter = 2;
+            renderPaydays();
+            document.getElementById('results').style.display = 'none';
+        }
+        
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            // Устанавливаем дату начала работы на 23 февраля для примера
+            const exampleStartDate = new Date(today.getFullYear(), 1, 23);
+            document.getElementById('workStartDate').value = exampleStartDate.toISOString().split('T')[0];
+            document.getElementById('calcMonth').value = today.getMonth() + 1;
+            document.getElementById('calcYear').value = today.getFullYear();
+            
+            const yearSelect = document.getElementById('calcYear');
+            for (let year = 2024; year <= 2030; year++) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                if (year === today.getFullYear()) option.selected = true;
+                yearSelect.appendChild(option);
+            }
+            
+            renderPaydays();
+            updateScheduleInfo();
+            
+            document.getElementById('addPaydayBtn').onclick = addPayday;
+        });
+    </script>
+</body>
+</html>
