@@ -1,6 +1,6 @@
-import { sql } from '@vercel/postgres';
+const { sql } = require('@vercel/postgres');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   try {
     // Create users table
     await sql`
@@ -28,4 +28,4 @@ export default async function handler(req, res) {
     console.error('Migration error:', error);
     res.status(500).json({ error: 'Migration failed', details: error.message });
   }
-}
+};

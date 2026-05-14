@@ -1,5 +1,5 @@
-import { sql } from '@vercel/postgres';
-import jwt from 'jsonwebtoken';
+const { sql } = require('@vercel/postgres');
+const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key';
 
@@ -9,7 +9,7 @@ function getTokenFromHeader(req) {
   return parts.length === 2 && parts[0] === 'Bearer' ? parts[1] : null;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -49,4 +49,4 @@ export default async function handler(req, res) {
     console.error('Save settings error:', error);
     res.status(500).json({ error: 'Failed to save settings' });
   }
-}
+};

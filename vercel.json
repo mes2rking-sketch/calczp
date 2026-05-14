@@ -1,7 +1,8 @@
 {
   "name": "calczp",
   "version": 2,
-  "buildCommand": "",
+  "installCommand": "npm install",
+  "buildCommand": "npm run build || echo 'No build needed'",
   "outputDirectory": ".",
   "public": true,
   "env": [
@@ -10,17 +11,24 @@
   ],
   "functions": {
     "api/**/*.js": {
-      "memory": 128,
-      "maxDuration": 60
+      "runtime": "nodejs18.x",
+      "memory": 256,
+      "maxDuration": 30
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    }
+  ],
   "headers": [
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
       "headers": [
         {
-          "key": "Cache-Control",
-          "value": "public, max-age=3600, must-revalidate"
+          "key": "Content-Type",
+          "value": "application/json"
         },
         {
           "key": "Access-Control-Allow-Origin",
@@ -33,6 +41,15 @@
         {
           "key": "Access-Control-Allow-Headers",
           "value": "Content-Type, Authorization"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
         }
       ]
     }
