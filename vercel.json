@@ -4,10 +4,6 @@
   "installCommand": "npm install",
   "outputDirectory": ".",
   "public": true,
-  "env": [
-    "POSTGRES_URL",
-    "JWT_SECRET"
-  ],
   "functions": {
     "api/**/*.js": {
       "runtime": "nodejs18.x",
