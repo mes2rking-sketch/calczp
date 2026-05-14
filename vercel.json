@@ -1,6 +1,7 @@
 {
   "name": "calczp",
   "version": 2,
+  "installCommand": "npm install",
   "outputDirectory": ".",
   "public": true,
   "env": [
