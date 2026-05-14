@@ -1488,10 +1488,18 @@
             // Инициализация авторизации
             AUTH.updateUI();
 
+            // Auto-load settings when logged in
+            if (AUTH.isLoggedIn()) {
+                loadSettings();
+            }
+
             // Close modal on overlay click
             document.getElementById('authModal').addEventListener('click', (e) => {
                 if (e.target.id === 'authModal') closeAuthModal();
             });
+
+            // Setup auto-save on form changes
+            setupAutoSave();
         });
 
         function initTheme() {
@@ -1759,7 +1767,6 @@
 
         async function loadSettings() {
             if (!AUTH.isLoggedIn()) {
-                showToast('Пожалуйста, войдите в аккаунт', 'error');
                 return;
             }
 
@@ -1772,12 +1779,10 @@
                 const data = await res.json();
 
                 if (!res.ok) {
-                    showToast(data.error || 'Ошибка загрузки', 'error');
                     return;
                 }
 
                 if (!data.settings) {
-                    showToast('Нет сохранённых настроек', 'error');
                     return;
                 }
 
@@ -1804,11 +1809,51 @@
                 }
 
                 updateScheduleInfo();
-                showToast('Настройки загружены!', 'success');
             } catch (err) {
-                showToast('Ошибка сети', 'error');
-                console.error(err);
+                console.error('Load settings error:', err);
             }
+        }
+
+        // Auto-save with debounce
+        let autoSaveTimeout;
+        function autoSaveSettings() {
+            if (!AUTH.isLoggedIn()) return;
+
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                const settings = {
+                    scheduleType: document.getElementById('scheduleType').value,
+                    salary: document.getElementById('salary').value,
+                    workStartDate: document.getElementById('workStartDate').value,
+                    calcMonth: document.getElementById('calcMonth').value,
+                    calcYear: document.getElementById('calcYear').value,
+                    paydaySettings: getPaydayValues(),
+                    bonusSettings: getBonusValues()
+                };
+
+                fetch('/api/settings/save', {
+                    method: 'POST',
+                    headers: AUTH.headers(),
+                    body: JSON.stringify(settings)
+                }).catch(err => console.error('Auto-save error:', err));
+            }, 1500);
+        }
+
+        function setupAutoSave() {
+            const formInputs = document.querySelectorAll(
+                '#scheduleType, #salary, #workStartDate, #calcMonth, #calcYear, .payday-field input, .bonus-card-fields input'
+            );
+
+            formInputs.forEach(input => {
+                input.addEventListener('change', autoSaveSettings);
+                input.addEventListener('input', autoSaveSettings);
+            });
+
+            // Also save when adding/removing paydays or bonuses
+            const addPaydayBtn = document.getElementById('addPaydayBtn');
+            const addBonusBtn = document.getElementById('addBonusBtn');
+            if (addPaydayBtn) addPaydayBtn.addEventListener('click', () => setTimeout(autoSaveSettings, 100));
+            if (addBonusBtn) addBonusBtn.addEventListener('click', () => setTimeout(autoSaveSettings, 100));
         }
     </script>
 </body>
