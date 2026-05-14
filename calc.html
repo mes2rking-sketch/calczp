@@ -661,47 +661,6 @@
             }
         }
 
-        .settings-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-        }
-
-        .settings-buttons.hidden {
-            display: none;
-        }
-
-        .btn-settings {
-            padding: 10px 15px;
-            font-size: 13px;
-            background: #6f42c1;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-settings:hover {
-            background: #5a32a3;
-            transform: translateY(-2px);
-        }
-
-        .btn-logout {
-            padding: 8px 12px;
-            font-size: 12px;
-            background: #6c757d;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-logout:hover {
-            background: #5a6268;
-        }
     </style>
 </head>
 <body>
@@ -804,12 +763,6 @@
             <div class="actions">
                 <button class="btn btn-primary" onclick="calculate()">📊 Рассчитать</button>
                 <button class="btn btn-secondary" onclick="resetForm()">🔄 Сбросить</button>
-            </div>
-
-            <!-- Settings Buttons -->
-            <div class="settings-buttons hidden" id="settingsButtons">
-                <button class="btn-settings" onclick="saveSettings()">💾 Сохранить настройки</button>
-                <button class="btn-settings" onclick="loadSettings()">📂 Загрузить настройки</button>
             </div>
 
             <!-- Результаты -->
@@ -1560,7 +1513,6 @@
 
             updateUI() {
                 const authBtn = document.getElementById('authButton');
-                const settingsBtn = document.getElementById('settingsButtons');
 
                 if (this.isLoggedIn()) {
                     authBtn.textContent = `👤 ${this.username}`;
@@ -1568,11 +1520,9 @@
                         AUTH.logout();
                         showToast('Вы вышли из аккаунта', 'success');
                     };
-                    settingsBtn.classList.remove('hidden');
                 } else {
                     authBtn.textContent = 'Войти';
                     authBtn.onclick = openAuthModal;
-                    settingsBtn.classList.add('hidden');
                 }
             }
         };
