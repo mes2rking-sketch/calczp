@@ -1,8 +1,6 @@
 {
   "name": "calczp",
   "version": 2,
-  "installCommand": "npm install",
-  "buildCommand": "npm run build || echo 'No build needed'",
   "outputDirectory": ".",
   "public": true,
   "env": [
