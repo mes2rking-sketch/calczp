@@ -661,6 +661,149 @@
             }
         }
 
+        /* Calendar Styles */
+        .calendar-section {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color, #e5e7eb);
+        }
+
+        .calendar-section.hidden {
+            display: none;
+        }
+
+        .calendar-title {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .cal-header {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-secondary, #6b7280);
+            padding: 8px 0;
+            text-transform: uppercase;
+        }
+
+        .cal-day {
+            position: relative;
+            border-radius: 8px;
+            padding: 8px 4px;
+            min-height: 58px;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            transition: all 0.2s ease;
+        }
+
+        .cal-day.work {
+            background: var(--work-day-bg, #dbeafe);
+            color: #0369a1;
+        }
+
+        .cal-day.rest {
+            background: var(--rest-day-bg, #f1f5f9);
+            color: #475569;
+        }
+
+        .cal-day.holiday {
+            background: var(--holiday-bg, #fee2e2);
+            color: #991b1b;
+        }
+
+        .cal-day.before-start {
+            opacity: 0.35;
+        }
+
+        .cal-day.today {
+            outline: 2px solid var(--accent, #3b82f6);
+            outline-offset: -2px;
+        }
+
+        .cal-day.empty {
+            background: transparent;
+        }
+
+        .cal-day-num {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .badge-holiday {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            font-size: 0.55rem;
+            background: #dc2626;
+            color: white;
+            border-radius: 2px;
+            padding: 1px 2px;
+            font-weight: 600;
+        }
+
+        .badge-payday {
+            display: block;
+            margin-top: 3px;
+            font-size: 0.6rem;
+            background: #f59e0b;
+            color: white;
+            border-radius: 3px;
+            padding: 2px 4px;
+            text-align: center;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .calendar-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.85rem;
+            padding: 1rem 0;
+            color: var(--text-secondary, #6b7280);
+        }
+
+        .calendar-legend span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .leg-work { --color: #dbeafe; }
+        .leg-rest { --color: #f1f5f9; }
+        .leg-holiday { --color: #fee2e2; }
+        .leg-payday { --color: #f59e0b; }
+
+        /* Dark theme adjustments */
+        [data-theme="dark"] .cal-day.work {
+            background: #1e3a5f;
+            color: #93c5fd;
+        }
+
+        [data-theme="dark"] .cal-day.rest {
+            background: #1e293b;
+            color: #cbd5e1;
+        }
+
+        [data-theme="dark"] .cal-day.holiday {
+            background: #3f1515;
+            color: #fca5a5;
+        }
+
+        [data-theme="dark"] .calendar-section {
+            border-top-color: var(--border-color, #374151);
+        }
+
     </style>
 </head>
 <body>
@@ -796,6 +939,18 @@
                 </div>
                 <div class="calendar-info" id="calendarInfo"></div>
                 <div id="paymentDetails" style="margin-top:15px;"></div>
+
+                <!-- Calendar Section -->
+                <div id="calendarSection" class="calendar-section hidden">
+                    <h3 class="calendar-title">📅 <span id="calendarTitle"></span></h3>
+                    <div id="calendarGrid" class="calendar-grid"></div>
+                    <div class="calendar-legend">
+                        <span class="leg-work">▪ Рабочий день</span>
+                        <span class="leg-rest">▪ Выходной</span>
+                        <span class="leg-holiday">▪ Праздник</span>
+                        <span class="leg-payday">▪ Выплата</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1398,8 +1553,134 @@
             document.getElementById('paymentDetails').innerHTML = detailsHtml;
             
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+
+            // Показываем календарь
+            renderCalendar(year, month, scheduleType, workStartDateStr, validPayments, bonuses);
         }
-        
+
+        function getDayType(date, scheduleType, workStartDate) {
+            const dateStr = date.toISOString().split('T')[0];
+            const year = date.getFullYear();
+
+            if (scheduleType === '5_2' || scheduleType === '6_1') {
+                if (isHoliday(dateStr, year)) return 'holiday';
+                return isWeekendBySchedule(date, scheduleType) ? 'rest' : 'work';
+            }
+
+            // Shift schedules: 2_2 or 3_3
+            const cycleLen = scheduleType === '2_2' ? 4 : 6;
+            const workLen = scheduleType === '2_2' ? 2 : 3;
+            const anchor = new Date(workStartDate + 'T00:00:00');
+            const diffMs = date - anchor;
+            const diffDays = Math.floor(diffMs / 86400000);
+            const pos = ((diffDays % cycleLen) + cycleLen) % cycleLen;
+            return pos < workLen ? 'work' : 'rest';
+        }
+
+        function renderCalendar(year, month, scheduleType, workStartDate, payments, bonuses) {
+            const calendarSection = document.getElementById('calendarSection');
+            const calendarGrid = document.getElementById('calendarGrid');
+            const calendarTitle = document.getElementById('calendarTitle');
+
+            if (!calendarSection || !calendarGrid || !calendarTitle) return;
+
+            calendarGrid.innerHTML = '';
+
+            // Build maps for quick lookup
+            const paymentsMap = {};
+            const bonusesMap = {};
+
+            payments.forEach(p => {
+                const paydayDate = new Date(year, month, p.paydayDate);
+                const key = paydayDate.toISOString().split('T')[0];
+                if (!paymentsMap[key]) {
+                    paymentsMap[key] = [];
+                }
+                paymentsMap[key].push(Math.round(p.amount));
+            });
+
+            bonuses.forEach(b => {
+                const bonusDate = new Date(year, month, b.bonusDate);
+                const key = bonusDate.toISOString().split('T')[0];
+                bonusesMap[key] = true;
+            });
+
+            // Month names for title
+            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+            const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+
+            calendarTitle.textContent = `${monthNames[month]} ${year}`;
+
+            // Add weekday headers
+            weekDays.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'cal-header';
+                header.textContent = day;
+                calendarGrid.appendChild(header);
+            });
+
+            // Get first day of month (0 = Sunday, 1 = Monday, etc.)
+            const firstDay = new Date(year, month, 1);
+            const lastDay = getLastDayOfMonth(year, month);
+            let startDayOfWeek = firstDay.getDay();
+            // Adjust to make Monday = 0
+            startDayOfWeek = startDayOfWeek === 0 ? 6 : startDayOfWeek - 1;
+
+            // Add empty cells for days before first day
+            for (let i = 0; i < startDayOfWeek; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'cal-day empty';
+                calendarGrid.appendChild(emptyCell);
+            }
+
+            // Parse work start date
+            const workStartDate_parsed = new Date(workStartDate + 'T00:00:00');
+            const today = new Date();
+
+            // Add day cells
+            for (let day = 1; day <= lastDay; day++) {
+                const date = new Date(year, month, day);
+                const dateKey = date.toISOString().split('T')[0];
+
+                const dayType = getDayType(date, scheduleType, workStartDate);
+                const isToday = date.toDateString() === today.toDateString() && month === today.getMonth() && year === today.getFullYear();
+                const isBeforeStart = date < workStartDate_parsed;
+
+                const cell = document.createElement('div');
+                let classes = ['cal-day', dayType];
+
+                if (isBeforeStart) classes.push('before-start');
+                if (isToday) classes.push('today');
+
+                cell.className = classes.join(' ');
+
+                let html = `<div class="cal-day-num">${day}</div>`;
+
+                // Add holiday badge
+                if (dayType === 'holiday') {
+                    html += '<div class="badge-holiday">ПР</div>';
+                }
+
+                // Add payment badge
+                if (paymentsMap[dateKey]) {
+                    const amounts = paymentsMap[dateKey];
+                    const totalAmount = amounts.reduce((a, b) => a + b, 0);
+                    const shortAmount = totalAmount >= 1000 ? Math.round(totalAmount / 1000) + 'т' : totalAmount;
+                    html += `<div class="badge-payday">₽${shortAmount}</div>`;
+                }
+
+                // Add bonus indicator
+                if (bonusesMap[dateKey]) {
+                    html += '<div class="badge-payday" style="background: #8b5cf6;">🎁</div>';
+                }
+
+                cell.innerHTML = html;
+                calendarGrid.appendChild(cell);
+            }
+
+            calendarSection.classList.remove('hidden');
+        }
+
         function resetForm() {
             document.getElementById('salary').value = '';
             paydayCounter = 2;
@@ -1617,6 +1898,7 @@
                 }
 
                 AUTH.login(data.token, data.username);
+                await loadSettings();
                 closeAuthModal();
                 document.getElementById('loginUsername').value = '';
                 document.getElementById('loginPassword').value = '';
@@ -1790,13 +2072,17 @@
         }
 
         function setupAutoSave() {
-            const formInputs = document.querySelectorAll(
-                '#scheduleType, #salary, #workStartDate, #calcMonth, #calcYear, .payday-field input, .bonus-card-fields input'
-            );
-
-            formInputs.forEach(input => {
-                input.addEventListener('change', autoSaveSettings);
-                input.addEventListener('input', autoSaveSettings);
+            // Use event delegation on the container to catch dynamically added inputs
+            const container = document.body;
+            container.addEventListener('change', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                    autoSaveSettings();
+                }
+            });
+            container.addEventListener('input', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') {
+                    autoSaveSettings();
+                }
             });
 
             // Also save when adding/removing paydays or bonuses
