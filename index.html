@@ -1,23 +1,51 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Калькулятор выплат зарплаты</title>
+    <title>РљР°Р»СЊРєСѓР»СЏС‚РѕСЂ РІС‹РїР»Р°С‚ Р·Р°СЂРїР»Р°С‚С‹</title>
     <style>
         :root {
+            --bg-body: #070b14;
+            --bg-primary: #0d1424;
+            --bg-secondary: #111827;
+            --bg-card: #161f35;
+            --border-color: #1e2d45;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --accent-glow: rgba(99,102,241,0.15);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            --input-bg: #0d1424;
+            --input-border: #1e2d45;
+            --header-bg: #0d1424;
+            --info-bg: #1a3a4a;
+            --info-border: #2a5a6a;
+            --info-text: #a0d0e0;
+            --calendar-bg: #161f35;
+            --calendar-border: #1e2d45;
+            --calendar-text: #e0e0f0;
+            --warning-bg: #1a3a4a;
+        }
+
+        [data-theme="light"] {
+            --bg-body: #f0f4ff;
             --bg-primary: #ffffff;
-            --bg-secondary: #f8f9fa;
-            --bg-body: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --border-color: #e9ecef;
-            --text-primary: #2c3e50;
-            --text-secondary: #495057;
-            --text-light: #6c757d;
+            --bg-secondary: #f8faff;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
             --input-bg: #ffffff;
-            --input-border: #dee2e6;
-            --header-bg: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            --info-bg: #d1ecf1;
-            --info-border: #bee5eb;
+            --input-border: #cbd5e1;
+            --header-bg: #1e293b;
+            --info-bg: #dbeafe;
+            --info-border: #7dd3fc;
             --info-text: #0c5460;
             --calendar-bg: #fff3cd;
             --calendar-border: #ffc107;
@@ -25,67 +53,79 @@
             --warning-bg: #fff3cd;
         }
 
-        [data-theme="dark"] {
-            --bg-primary: #1a1a2e;
-            --bg-secondary: #16213e;
-            --bg-body: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
-            --border-color: #2d2d50;
-            --text-primary: #e0e0f0;
-            --text-secondary: #b0b0d0;
-            --text-light: #8a8aaa;
-            --input-bg: #0f3460;
-            --input-border: #4a4a80;
-            --header-bg: linear-gradient(135deg, #0f1f3a 0%, #1a3a5a 100%);
-            --info-bg: #1a3a4a;
-            --info-border: #2a5a6a;
-            --info-text: #a0d0e0;
-            --calendar-bg: #3a3010;
-            --calendar-border: #5a5010;
-            --calendar-text: #d0c0a0;
-            --warning-bg: #3a3010;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg-body);
             min-height: 100vh;
-            padding: 20px;
+            padding: 0;
             color: var(--text-primary);
             transition: background 0.3s ease, color 0.3s ease;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: var(--bg-primary);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            transition: background-color 0.3s ease;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         .header {
-            background: var(--header-bg);
-            color: white;
-            padding: 30px;
-            text-align: center;
-            position: relative;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            padding: 16px 30px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             transition: background 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         #themeToggle {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
             padding: 8px 12px;
             border-radius: 8px;
             cursor: pointer;
@@ -99,50 +139,69 @@
         }
 
         #themeToggle:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--bg-card);
             transform: scale(1.1);
         }
 
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 10px;
+        .auth-button {
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
         }
 
-        .header p {
-            opacity: 0.9;
-            font-size: 14px;
+        .auth-button:hover {
+            background: var(--accent-hover);
+            transform: scale(1.05);
         }
 
         .content {
             padding: 30px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 30px;
+            flex: 1;
+        }
+
+        @media (max-width: 900px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
         }
 
         .section {
-            margin-bottom: 30px;
-            padding: 20px;
             background: var(--bg-secondary);
-            border-radius: 12px;
             border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 14px;
             font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: color 0.3s ease;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .section-title::before {
-            content: '';
-            width: 4px;
-            height: 20px;
-            background: #3498db;
-            border-radius: 2px;
+            display: none;
         }
 
         .form-group {
@@ -161,8 +220,8 @@
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid var(--input-border);
+            padding: 10px 14px;
+            border: 1px solid var(--input-border);
             border-radius: 8px;
             font-size: 15px;
             background: var(--input-bg);
@@ -173,8 +232,8 @@
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
         }
 
         .row {
@@ -189,22 +248,22 @@
             }
         }
 
-        .payday-inputs {
+        .payday-inputs, .bonus-inputs {
             display: flex;
             flex-direction: column;
             gap: 15px;
         }
 
-        .payday-card {
-            background: var(--bg-primary);
+        .payday-card, .bonus-card {
+            background: var(--bg-card);
             border-radius: 12px;
             padding: 15px;
             border: 1px solid var(--border-color);
             position: relative;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
+            transition: all 0.3s;
         }
 
-        .payday-card-header {
+        .payday-card-header, .bonus-card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -214,16 +273,32 @@
             transition: border-color 0.3s ease;
         }
 
-        .payday-card-title {
+        .payday-card-title, .bonus-card-title {
             font-weight: 600;
             color: var(--text-primary);
             transition: color 0.3s ease;
         }
 
-        .payday-card-fields {
+        .payday-card-fields, .bonus-card-fields {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
             gap: 12px;
+        }
+
+        .payday-card-fields {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .bonus-card-fields {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media (max-width: 768px) {
+            .payday-card-fields {
+                grid-template-columns: 1fr;
+            }
+            .bonus-card-fields {
+                grid-template-columns: 1fr;
+            }
         }
 
         .payday-field {
@@ -234,7 +309,7 @@
         .payday-field label {
             font-size: 11px;
             font-weight: 500;
-            color: var(--text-light);
+            color: var(--text-muted);
             margin-bottom: 4px;
             transition: color 0.3s ease;
         }
@@ -252,7 +327,7 @@
         .payday-info {
             margin-top: 8px;
             font-size: 11px;
-            color: var(--text-light);
+            color: var(--text-muted);
             padding: 5px 8px;
             background: var(--bg-secondary);
             border-radius: 6px;
@@ -260,7 +335,7 @@
         }
 
         .btn-remove {
-            background: #dc3545;
+            background: var(--danger);
             color: white;
             border: none;
             border-radius: 6px;
@@ -271,13 +346,7 @@
         }
 
         .btn-remove:hover {
-            background: #c82333;
-        }
-
-        @media (max-width: 768px) {
-            .payday-card-fields {
-                grid-template-columns: 1fr;
-            }
+            background: #dc2626;
         }
 
         .btn {
@@ -291,32 +360,36 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
+            width: 100%;
+            padding: 14px 32px;
+            letter-spacing: 0.02em;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.4);
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            background: var(--bg-secondary);
         }
 
         .btn-outline-success {
             background: transparent;
-            border: 2px solid #28a745;
-            color: #28a745;
+            border: 2px solid var(--success);
+            color: var(--success);
         }
 
         .btn-outline-success:hover {
-            background: #28a745;
+            background: var(--success);
             color: white;
         }
 
@@ -325,59 +398,77 @@
             font-size: 13px;
         }
 
-        .results {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-
-        .results h3 {
-            margin-bottom: 20px;
-            font-size: 20px;
-        }
-
-        .result-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .result-item {
-            background: rgba(255,255,255,0.2);
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .result-item .label {
-            font-size: 13px;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
-
-        .result-item .value {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .calendar-info {
-            background: var(--calendar-bg);
-            border: 1px solid var(--calendar-border);
-            color: var(--calendar-text);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
         .actions {
             display: flex;
             gap: 10px;
             margin-top: 20px;
             flex-wrap: wrap;
+        }
+
+        .results {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 0;
+        }
+
+        .results h3 {
+            display: none;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+        }
+
+        .result-item .label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .result-item .value {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .result-item:nth-child(1) .value { color: var(--text-primary); }
+        .result-item:nth-child(2) .value { color: var(--accent); }
+        .result-item:nth-child(3) .value { color: var(--success); }
+        .result-item:nth-child(4) .value { color: var(--text-primary); }
+        .result-item:nth-child(5) .value { color: var(--success); }
+        .result-item:nth-child(6) .value { color: var(--accent); }
+
+        .calendar-info {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .payment-detail-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            color: var(--text-primary);
         }
 
         .info-box {
@@ -400,103 +491,17 @@
             margin-bottom: 3px;
         }
 
-        .payment-detail-card {
-            background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 10px;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 500;
-            margin-left: 8px;
-        }
-
-        .badge-prev {
-            background: #ffc107;
-            color: #856404;
-        }
-
-        .badge-current {
-            background: #28a745;
-            color: white;
-        }
-
         .warning-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
+            background: var(--warning-bg);
+            border-left: 4px solid var(--warning);
             padding: 10px;
             margin-top: 10px;
             border-radius: 6px;
             font-size: 12px;
-        }
-
-        .bonus-card {
-            background: var(--bg-primary);
-            border-radius: 12px;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .bonus-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border-color);
-            transition: border-color 0.3s ease;
-        }
-
-        .bonus-card-title {
-            font-weight: 600;
-            color: var(--text-primary);
-            transition: color 0.3s ease;
-        }
-
-        .bonus-card-fields {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        @media (max-width: 768px) {
-            .bonus-card-fields {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .badge-bonus {
-            background: #6f42c1;
-            color: white;
+            color: var(--text-secondary);
         }
 
         /* Auth Modal */
-        .auth-button {
-            position: absolute;
-            top: 15px;
-            right: 70px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .auth-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-        }
-
         .modal-overlay {
             display: none;
             position: fixed;
@@ -516,12 +521,14 @@
 
         .modal {
             background: var(--bg-primary);
-            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
             padding: 30px;
             width: 90%;
             max-width: 400px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             transition: background-color 0.3s ease;
+            position: relative;
         }
 
         .modal-tabs {
@@ -537,15 +544,15 @@
             border: none;
             cursor: pointer;
             font-weight: 600;
-            color: var(--text-light);
+            color: var(--text-muted);
             transition: all 0.3s;
             border-bottom: 2px solid transparent;
             margin-bottom: -2px;
         }
 
         .modal-tab.active {
-            color: #3498db;
-            border-bottom-color: #3498db;
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
 
         .modal-content {
@@ -571,7 +578,7 @@
         .modal-input-group input {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid var(--input-border);
+            border: 1px solid var(--input-border);
             border-radius: 8px;
             font-size: 15px;
             background: var(--input-bg);
@@ -581,12 +588,12 @@
 
         .modal-input-group input:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
         }
 
         .modal-error {
-            color: #dc3545;
+            color: var(--danger);
             font-size: 12px;
             margin-top: 5px;
             display: none;
@@ -599,7 +606,7 @@
         .modal-submit {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
             border: none;
             border-radius: 8px;
@@ -611,7 +618,7 @@
 
         .modal-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(52, 152, 219, 0.4);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.4);
         }
 
         .modal-close {
@@ -625,6 +632,7 @@
             color: var(--text-primary);
         }
 
+        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -643,11 +651,11 @@
         }
 
         .toast.success {
-            background: #28a745;
+            background: var(--success);
         }
 
         .toast.error {
-            background: #dc3545;
+            background: var(--danger);
         }
 
         @keyframes slideIn {
@@ -661,11 +669,11 @@
             }
         }
 
-        /* Calendar Styles */
+        /* Calendar */
         .calendar-section {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border-color, #e5e7eb);
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
         }
 
         .calendar-section.hidden {
@@ -675,6 +683,8 @@
         .calendar-title {
             margin-bottom: 1rem;
             color: var(--text-primary);
+            font-size: 16px;
+            font-weight: 600;
         }
 
         .calendar-grid {
@@ -688,7 +698,7 @@
             text-align: center;
             font-weight: 600;
             font-size: 0.75rem;
-            color: var(--text-secondary, #6b7280);
+            color: var(--text-secondary);
             padding: 8px 0;
             text-transform: uppercase;
         }
@@ -704,21 +714,25 @@
             align-items: center;
             justify-content: flex-start;
             transition: all 0.2s ease;
+            border: 1px solid transparent;
         }
 
         .cal-day.work {
-            background: var(--work-day-bg, #dbeafe);
-            color: #0369a1;
+            background: #0e1f35;
+            color: #60a5fa;
+            border-color: #1e3a5f;
         }
 
         .cal-day.rest {
-            background: var(--rest-day-bg, #f1f5f9);
-            color: #475569;
+            background: #111827;
+            color: #4b5563;
+            border-color: #1a1a2a;
         }
 
         .cal-day.holiday {
-            background: var(--holiday-bg, #fee2e2);
-            color: #991b1b;
+            background: #1f0808;
+            color: #f87171;
+            border-color: #2d0f0f;
         }
 
         .cal-day.before-start {
@@ -726,8 +740,7 @@
         }
 
         .cal-day.today {
-            outline: 2px solid var(--accent, #3b82f6);
-            outline-offset: -2px;
+            border: 2px solid var(--accent);
         }
 
         .cal-day.empty {
@@ -744,7 +757,7 @@
             top: 2px;
             right: 2px;
             font-size: 0.55rem;
-            background: #dc2626;
+            background: var(--danger);
             color: white;
             border-radius: 2px;
             padding: 1px 2px;
@@ -755,7 +768,7 @@
             display: block;
             margin-top: 3px;
             font-size: 0.6rem;
-            background: #f59e0b;
+            background: var(--warning);
             color: white;
             border-radius: 3px;
             padding: 2px 4px;
@@ -770,7 +783,7 @@
             gap: 1rem;
             font-size: 0.85rem;
             padding: 1rem 0;
-            color: var(--text-secondary, #6b7280);
+            color: var(--text-secondary);
         }
 
         .calendar-legend span {
@@ -779,162 +792,166 @@
             gap: 0.5rem;
         }
 
-        .leg-work { --color: #dbeafe; }
-        .leg-rest { --color: #f1f5f9; }
-        .leg-holiday { --color: #fee2e2; }
-        .leg-payday { --color: #f59e0b; }
-
-        /* Dark theme adjustments */
-        [data-theme="dark"] .cal-day.work {
-            background: #1e3a5f;
-            color: #93c5fd;
+        [data-theme="light"] .cal-day.work {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #bfdbfe;
         }
 
-        [data-theme="dark"] .cal-day.rest {
-            background: #1e293b;
-            color: #cbd5e1;
+        [data-theme="light"] .cal-day.rest {
+            background: #f1f5f9;
+            color: #475569;
+            border-color: #e2e8f0;
         }
 
-        [data-theme="dark"] .cal-day.holiday {
-            background: #3f1515;
-            color: #fca5a5;
+        [data-theme="light"] .cal-day.holiday {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fecaca;
         }
-
-        [data-theme="dark"] .calendar-section {
-            border-top-color: var(--border-color, #374151);
-        }
-
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <button id="themeToggle" title="Переключить тему">🌙</button>
-            <button id="authButton" class="auth-button" title="Вход в аккаунт">Войти</button>
-            <h1>💰 Калькулятор выплат зарплаты</h1>
+            <div class="header-brand">
+                <span class="header-icon">рџ’ј</span>
+                <div class="header-text">
+                    <div class="header-title">РљР°Р»СЊРєСѓР»СЏС‚РѕСЂ Р·Р°СЂРїР»Р°С‚С‹</div>
+                    <div class="header-sub">РџСЂРѕРёР·РІРѕРґСЃС‚РІРµРЅРЅС‹Р№ РєР°Р»РµРЅРґР°СЂСЊ Р Р¤</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="authButton" class="auth-button" title="Р’С…РѕРґ РІ Р°РєРєР°СѓРЅС‚">Р’РѕР№С‚Рё</button>
+                <button id="themeToggle" title="РџРµСЂРµРєР»СЋС‡РёС‚СЊ С‚РµРјСѓ">рџЊ™</button>
+            </div>
         </div>
 
         <div class="content">
-            <!-- График работы -->
+            <div class="main-layout">
+                <div class="form-column">
+            <!-- Р“СЂР°С„РёРє СЂР°Р±РѕС‚С‹ -->
             <div class="section">
-                <div class="section-title">График работы</div>
+                <div class="section-title">Р“СЂР°С„РёРє СЂР°Р±РѕС‚С‹</div>
                 <div class="row">
                     <div class="form-group">
-                        <label for="scheduleType">Тип графика</label>
+                        <label for="scheduleType">РўРёРї РіСЂР°С„РёРєР°</label>
                         <select id="scheduleType" onchange="updateScheduleInfo()">
-                            <option value="5_2">5/2 (пятидневка, выходные сб-вс)</option>
-                            <option value="6_1">6/1 (шестидневка, выходной вс)</option>
-                            <option value="2_2">2/2 (два через два)</option>
-                            <option value="3_3">3/3 (три через три)</option>
+                            <option value="5_2">5/2 (РїСЏС‚РёРґРЅРµРІРєР°, РІС‹С…РѕРґРЅС‹Рµ СЃР±-РІСЃ)</option>
+                            <option value="6_1">6/1 (С€РµСЃС‚РёРґРЅРµРІРєР°, РІС‹С…РѕРґРЅРѕР№ РІСЃ)</option>
+                            <option value="2_2">2/2 (РґРІР° С‡РµСЂРµР· РґРІР°)</option>
+                            <option value="3_3">3/3 (С‚СЂРё С‡РµСЂРµР· С‚СЂРё)</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="workStartDate">Дата начала работы</label>
+                        <label for="workStartDate">Р”Р°С‚Р° РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹</label>
                         <input type="date" id="workStartDate">
-                        <small style="color: #6c757d; display: block; margin-top: 5px;">Если сотрудник начал работать не с начала месяца, зарплата будет рассчитана только за отработанные дни</small>
+                        <small style="color: #6c757d; display: block; margin-top: 5px;">Р•СЃР»Рё СЃРѕС‚СЂСѓРґРЅРёРє РЅР°С‡Р°Р» СЂР°Р±РѕС‚Р°С‚СЊ РЅРµ СЃ РЅР°С‡Р°Р»Р° РјРµСЃСЏС†Р°, Р·Р°СЂРїР»Р°С‚Р° Р±СѓРґРµС‚ СЂР°СЃСЃС‡РёС‚Р°РЅР° С‚РѕР»СЊРєРѕ Р·Р° РѕС‚СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ РґРЅРё</small>
                     </div>
                 </div>
                 <div class="info-box" id="scheduleInfo">
-                    <strong>ℹ️ Информация о графике 5/2:</strong>
+                    <strong>в„№пёЏ РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РіСЂР°С„РёРєРµ 5/2:</strong>
                     <ul>
-                        <li>Рабочие дни: понедельник - пятница</li>
-                        <li>Выходные: суббота, воскресенье</li>
-                        <li>Учитываются официальные праздники РФ</li>
+                        <li>Р Р°Р±РѕС‡РёРµ РґРЅРё: РїРѕРЅРµРґРµР»СЊРЅРёРє - РїСЏС‚РЅРёС†Р°</li>
+                        <li>Р’С‹С…РѕРґРЅС‹Рµ: СЃСѓР±Р±РѕС‚Р°, РІРѕСЃРєСЂРµСЃРµРЅСЊРµ</li>
+                        <li>РЈС‡РёС‚С‹РІР°СЋС‚СЃСЏ РѕС„РёС†РёР°Р»СЊРЅС‹Рµ РїСЂР°Р·РґРЅРёРєРё Р Р¤</li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Зарплата -->
+            <!-- Р—Р°СЂРїР»Р°С‚Р° -->
             <div class="section">
-                <div class="section-title">Зарплата</div>
+                <div class="section-title">Р—Р°СЂРїР»Р°С‚Р°</div>
                 <div class="form-group">
-                    <label for="salary">Оклад за полностью отработанный месяц (нетто, после вычета налогов)</label>
-                    <input type="number" id="salary" placeholder="Например: 50000" min="0" step="1000">
+                    <label for="salary">РћРєР»Р°Рґ Р·Р° РїРѕР»РЅРѕСЃС‚СЊСЋ РѕС‚СЂР°Р±РѕС‚Р°РЅРЅС‹Р№ РјРµСЃСЏС† (РЅРµС‚С‚Рѕ, РїРѕСЃР»Рµ РІС‹С‡РµС‚Р° РЅР°Р»РѕРіРѕРІ)</label>
+                    <input type="number" id="salary" placeholder="РќР°РїСЂРёРјРµСЂ: 50000" min="0" step="1000">
                 </div>
             </div>
 
-            <!-- Даты выплат -->
+            <!-- Р”Р°С‚С‹ РІС‹РїР»Р°С‚ -->
             <div class="section">
-                <div class="section-title">Настройка выплат</div>
+                <div class="section-title">РќР°СЃС‚СЂРѕР№РєР° РІС‹РїР»Р°С‚</div>
                 <div id="paydaysContainer" class="payday-inputs">
-                    <!-- Выплаты будут добавляться сюда динамически -->
+                    <!-- Р’С‹РїР»Р°С‚С‹ Р±СѓРґСѓС‚ РґРѕР±Р°РІР»СЏС‚СЊСЃСЏ СЃСЋРґР° РґРёРЅР°РјРёС‡РµСЃРєРё -->
                 </div>
                 <div style="display:flex; gap:10px; margin-top:15px; flex-wrap:wrap;">
-                    <button class="btn btn-outline-success btn-sm" id="addPaydayBtn">+ Добавить выплату</button>
-                    <button class="btn btn-sm" id="addBonusBtn" style="background:transparent; border:2px solid #6f42c1; color:#6f42c1;">+ Добавить премию</button>
+                    <button class="btn btn-outline-success btn-sm" id="addPaydayBtn">+ Р”РѕР±Р°РІРёС‚СЊ РІС‹РїР»Р°С‚Сѓ</button>
+                    <button class="btn btn-sm" id="addBonusBtn" style="background:transparent; border:2px solid #6f42c1; color:#6f42c1;">+ Р”РѕР±Р°РІРёС‚СЊ РїСЂРµРјРёСЋ</button>
                 </div>
                 <div id="bonusesContainer" class="payday-inputs" style="margin-top:15px;"></div>
                 <div class="info-box" style="margin-top:15px;">
-                    <strong>📌 Как это работает (автоматически):</strong><br>
-                    • <strong>Выплаты до 15 числа</strong> (включительно) — начисляются за <strong>предыдущий месяц</strong><br>
-                    • <strong>Выплаты после 15 числа</strong> — начисляются за <strong>текущий месяц</strong><br><br>
-                    <strong>Пример стандартной схемы:</strong><br>
-                    • 5 число → выплата за предыдущий месяц (период 16-31)<br>
-                    • 20 число → выплата за текущий месяц (период 1-15)
+                    <strong>рџ“Њ РљР°Рє СЌС‚Рѕ СЂР°Р±РѕС‚Р°РµС‚ (Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё):</strong><br>
+                    вЂў <strong>Р’С‹РїР»Р°С‚С‹ РґРѕ 15 С‡РёСЃР»Р°</strong> (РІРєР»СЋС‡РёС‚РµР»СЊРЅРѕ) вЂ” РЅР°С‡РёСЃР»СЏСЋС‚СЃСЏ Р·Р° <strong>РїСЂРµРґС‹РґСѓС‰РёР№ РјРµСЃСЏС†</strong><br>
+                    вЂў <strong>Р’С‹РїР»Р°С‚С‹ РїРѕСЃР»Рµ 15 С‡РёСЃР»Р°</strong> вЂ” РЅР°С‡РёСЃР»СЏСЋС‚СЃСЏ Р·Р° <strong>С‚РµРєСѓС‰РёР№ РјРµСЃСЏС†</strong><br><br>
+                    <strong>РџСЂРёРјРµСЂ СЃС‚Р°РЅРґР°СЂС‚РЅРѕР№ СЃС…РµРјС‹:</strong><br>
+                    вЂў 5 С‡РёСЃР»Рѕ в†’ РІС‹РїР»Р°С‚Р° Р·Р° РїСЂРµРґС‹РґСѓС‰РёР№ РјРµСЃСЏС† (РїРµСЂРёРѕРґ 16-31)<br>
+                    вЂў 20 С‡РёСЃР»Рѕ в†’ РІС‹РїР»Р°С‚Р° Р·Р° С‚РµРєСѓС‰РёР№ РјРµСЃСЏС† (РїРµСЂРёРѕРґ 1-15)
                 </div>
             </div>
 
-            <!-- Период расчета -->
+            <!-- РџРµСЂРёРѕРґ СЂР°СЃС‡РµС‚Р° -->
             <div class="section">
-                <div class="section-title">Период расчета</div>
+                <div class="section-title">РџРµСЂРёРѕРґ СЂР°СЃС‡РµС‚Р°</div>
                 <div class="row">
                     <div class="form-group">
-                        <label for="calcMonth">Месяц выплат</label>
+                        <label for="calcMonth">РњРµСЃСЏС† РІС‹РїР»Р°С‚</label>
                         <select id="calcMonth">
-                            <option value="1">Январь</option>
-                            <option value="2">Февраль</option>
-                            <option value="3">Март</option>
-                            <option value="4">Апрель</option>
-                            <option value="5">Май</option>
-                            <option value="6">Июнь</option>
-                            <option value="7">Июль</option>
-                            <option value="8">Август</option>
-                            <option value="9">Сентябрь</option>
-                            <option value="10">Октябрь</option>
-                            <option value="11">Ноябрь</option>
-                            <option value="12">Декабрь</option>
+                            <option value="1">РЇРЅРІР°СЂСЊ</option>
+                            <option value="2">Р¤РµРІСЂР°Р»СЊ</option>
+                            <option value="3">РњР°СЂС‚</option>
+                            <option value="4">РђРїСЂРµР»СЊ</option>
+                            <option value="5">РњР°Р№</option>
+                            <option value="6">РСЋРЅСЊ</option>
+                            <option value="7">РСЋР»СЊ</option>
+                            <option value="8">РђРІРіСѓСЃС‚</option>
+                            <option value="9">РЎРµРЅС‚СЏР±СЂСЊ</option>
+                            <option value="10">РћРєС‚СЏР±СЂСЊ</option>
+                            <option value="11">РќРѕСЏР±СЂСЊ</option>
+                            <option value="12">Р”РµРєР°Р±СЂСЊ</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="calcYear">Год</label>
+                        <label for="calcYear">Р“РѕРґ</label>
                         <select id="calcYear"></select>
                     </div>
                 </div>
             </div>
 
-            <!-- Кнопка расчета -->
+            <!-- РљРЅРѕРїРєР° СЂР°СЃС‡РµС‚Р° -->
             <div class="actions">
-                <button class="btn btn-primary" onclick="calculate()">📊 Рассчитать</button>
-                <button class="btn btn-secondary" onclick="resetForm()">🔄 Сбросить</button>
+                <button class="btn btn-primary" onclick="calculate()">рџ“Љ Р Р°СЃСЃС‡РёС‚Р°С‚СЊ</button>
+                <button class="btn btn-secondary" onclick="resetForm()">рџ”„ РЎР±СЂРѕСЃРёС‚СЊ</button>
             </div>
 
-            <!-- Результаты -->
+                </div>
+                <div class="results-column">
+            <!-- Р РµР·СѓР»СЊС‚Р°С‚С‹ -->
             <div class="results" id="results" style="display:none;">
-                <h3>📈 Результаты расчета</h3>
+                <h3>рџ“€ Р РµР·СѓР»СЊС‚Р°С‚С‹ СЂР°СЃС‡РµС‚Р°</h3>
                 <div class="result-grid">
                     <div class="result-item">
-                        <div class="label">Рабочих дней в месяце</div>
+                        <div class="label">Р Р°Р±РѕС‡РёС… РґРЅРµР№ РІ РјРµСЃСЏС†Рµ</div>
                         <div class="value" id="workDays">0</div>
                     </div>
                     <div class="result-item">
-                        <div class="label">Ставка за день</div>
-                        <div class="value" id="dailyRate">0 ₽</div>
+                        <div class="label">РЎС‚Р°РІРєР° Р·Р° РґРµРЅСЊ</div>
+                        <div class="value" id="dailyRate">0 в‚Ѕ</div>
                     </div>
                     <div class="result-item">
-                        <div class="label">Сумма выплат в периоде</div>
-                        <div class="value" id="totalPayments">0 ₽</div>
+                        <div class="label">РЎСѓРјРјР° РІС‹РїР»Р°С‚ РІ РїРµСЂРёРѕРґРµ</div>
+                        <div class="value" id="totalPayments">0 в‚Ѕ</div>
                     </div>
                     <div class="result-item">
-                        <div class="label">Выплат в периоде</div>
+                        <div class="label">Р’С‹РїР»Р°С‚ РІ РїРµСЂРёРѕРґРµ</div>
                         <div class="value" id="paymentCountResult">0</div>
                     </div>
                     <div class="result-item">
-                        <div class="label">Выплачено с начала работы</div>
-                        <div class="value" id="cumulativePayments">0 ₽</div>
+                        <div class="label">Р’С‹РїР»Р°С‡РµРЅРѕ СЃ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹</div>
+                        <div class="value" id="cumulativePayments">0 в‚Ѕ</div>
                     </div>
                     <div class="result-item">
-                        <div class="label">Прогноз дохода за год</div>
-                        <div class="value" id="annualProjection">0 ₽</div>
+                        <div class="label">РџСЂРѕРіРЅРѕР· РґРѕС…РѕРґР° Р·Р° РіРѕРґ</div>
+                        <div class="value" id="annualProjection">0 в‚Ѕ</div>
                     </div>
                 </div>
                 <div class="calendar-info" id="calendarInfo"></div>
@@ -942,14 +959,16 @@
 
                 <!-- Calendar Section -->
                 <div id="calendarSection" class="calendar-section hidden">
-                    <h3 class="calendar-title">📅 <span id="calendarTitle"></span></h3>
+                    <h3 class="calendar-title">рџ“… <span id="calendarTitle"></span></h3>
                     <div id="calendarGrid" class="calendar-grid"></div>
                     <div class="calendar-legend">
-                        <span class="leg-work">▪ Рабочий день</span>
-                        <span class="leg-rest">▪ Выходной</span>
-                        <span class="leg-holiday">▪ Праздник</span>
-                        <span class="leg-payday">▪ Выплата</span>
+                        <span class="leg-work">в–Є Р Р°Р±РѕС‡РёР№ РґРµРЅСЊ</span>
+                        <span class="leg-rest">в–Є Р’С‹С…РѕРґРЅРѕР№</span>
+                        <span class="leg-holiday">в–Є РџСЂР°Р·РґРЅРёРє</span>
+                        <span class="leg-payday">в–Є Р’С‹РїР»Р°С‚Р°</span>
                     </div>
+                </div>
+            </div>
                 </div>
             </div>
         </div>
@@ -958,42 +977,42 @@
     <!-- Auth Modal -->
     <div class="modal-overlay" id="authModal">
         <div class="modal">
-            <button class="modal-close" onclick="closeAuthModal()">✕</button>
+            <button class="modal-close" onclick="closeAuthModal()">вњ•</button>
             <div class="modal-tabs">
-                <button class="modal-tab active" onclick="switchAuthTab('login')">Войти</button>
-                <button class="modal-tab" onclick="switchAuthTab('register')">Зарегистрироваться</button>
+                <button class="modal-tab active" onclick="switchAuthTab('login')">Р’РѕР№С‚Рё</button>
+                <button class="modal-tab" onclick="switchAuthTab('register')">Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊСЃСЏ</button>
             </div>
 
             <!-- Login Form -->
             <div class="modal-content active" id="loginTab">
                 <div class="modal-input-group">
-                    <label>Логин</label>
-                    <input type="text" id="loginUsername" placeholder="3-20 латинских букв/цифр" maxlength="20">
+                    <label>Р›РѕРіРёРЅ</label>
+                    <input type="text" id="loginUsername" placeholder="3-20 Р»Р°С‚РёРЅСЃРєРёС… Р±СѓРєРІ/С†РёС„СЂ" maxlength="20">
                     <div class="modal-error" id="loginUsernameError"></div>
                 </div>
                 <div class="modal-input-group">
-                    <label>Пароль</label>
-                    <input type="password" id="loginPassword" placeholder="6-20 латинских букв/цифр" maxlength="20">
+                    <label>РџР°СЂРѕР»СЊ</label>
+                    <input type="password" id="loginPassword" placeholder="6-20 Р»Р°С‚РёРЅСЃРєРёС… Р±СѓРєРІ/С†РёС„СЂ" maxlength="20">
                     <div class="modal-error" id="loginPasswordError"></div>
                 </div>
                 <div class="modal-error" id="loginError"></div>
-                <button class="modal-submit" onclick="doLogin()">Войти</button>
+                <button class="modal-submit" onclick="doLogin()">Р’РѕР№С‚Рё</button>
             </div>
 
             <!-- Register Form -->
             <div class="modal-content" id="registerTab">
                 <div class="modal-input-group">
-                    <label>Новый логин</label>
-                    <input type="text" id="regUsername" placeholder="3-20 латинских букв/цифр" maxlength="20">
+                    <label>РќРѕРІС‹Р№ Р»РѕРіРёРЅ</label>
+                    <input type="text" id="regUsername" placeholder="3-20 Р»Р°С‚РёРЅСЃРєРёС… Р±СѓРєРІ/С†РёС„СЂ" maxlength="20">
                     <div class="modal-error" id="regUsernameError"></div>
                 </div>
                 <div class="modal-input-group">
-                    <label>Пароль</label>
-                    <input type="password" id="regPassword" placeholder="6-20 латинских букв/цифр" maxlength="20">
+                    <label>РџР°СЂРѕР»СЊ</label>
+                    <input type="password" id="regPassword" placeholder="6-20 Р»Р°С‚РёРЅСЃРєРёС… Р±СѓРєРІ/С†РёС„СЂ" maxlength="20">
                     <div class="modal-error" id="regPasswordError"></div>
                 </div>
                 <div class="modal-error" id="registerError"></div>
-                <button class="modal-submit" onclick="doRegister()">Создать аккаунт</button>
+                <button class="modal-submit" onclick="doRegister()">РЎРѕР·РґР°С‚СЊ Р°РєРєР°СѓРЅС‚</button>
             </div>
         </div>
     </div>
@@ -1002,7 +1021,7 @@
     <div class="toast" id="toast"></div>
 
     <script>
-        // Производственный календарь РФ
+        // РџСЂРѕРёР·РІРѕРґСЃС‚РІРµРЅРЅС‹Р№ РєР°Р»РµРЅРґР°СЂСЊ Р Р¤
         const holidays = {
             2024: ['2024-01-01','2024-01-02','2024-01-03','2024-01-04','2024-01-05','2024-01-06','2024-01-07','2024-01-08','2024-02-23','2024-03-08','2024-05-01','2024-05-09','2024-06-12','2024-11-04'],
             2025: ['2025-01-01','2025-01-02','2025-01-03','2025-01-04','2025-01-05','2025-01-06','2025-01-07','2025-02-23','2025-03-08','2025-05-01','2025-05-09','2025-06-12','2025-11-04'],
@@ -1010,10 +1029,10 @@
         };
 
         const scheduleInfoText = {
-            '5_2': { title: '5/2', desc: 'Рабочие: пн-пт, выходные: сб-вс' },
-            '6_1': { title: '6/1', desc: 'Рабочие: пн-сб, выходной: вс' },
-            '2_2': { title: '2/2', desc: '2 дня работы, 2 дня отдыха (цикл 4 дня)' },
-            '3_3': { title: '3/3', desc: '3 дня работы, 3 дня отдыха (цикл 6 дней)' }
+            '5_2': { title: '5/2', desc: 'Р Р°Р±РѕС‡РёРµ: РїРЅ-РїС‚, РІС‹С…РѕРґРЅС‹Рµ: СЃР±-РІСЃ' },
+            '6_1': { title: '6/1', desc: 'Р Р°Р±РѕС‡РёРµ: РїРЅ-СЃР±, РІС‹С…РѕРґРЅРѕР№: РІСЃ' },
+            '2_2': { title: '2/2', desc: '2 РґРЅСЏ СЂР°Р±РѕС‚С‹, 2 РґРЅСЏ РѕС‚РґС‹С…Р° (С†РёРєР» 4 РґРЅСЏ)' },
+            '3_3': { title: '3/3', desc: '3 РґРЅСЏ СЂР°Р±РѕС‚С‹, 3 РґРЅСЏ РѕС‚РґС‹С…Р° (С†РёРєР» 6 РґРЅРµР№)' }
         };
 
         let paydayCounter = 2;
@@ -1023,8 +1042,8 @@
             const type = document.getElementById('scheduleType').value;
             const info = scheduleInfoText[type];
             document.getElementById('scheduleInfo').innerHTML = `
-                <strong>ℹ️ График ${info.title}</strong>
-                <ul><li>${info.desc}</li><li>Учитываются официальные праздники РФ</li>${type === '2_2' || type === '3_3' ? '<li><strong>Важно:</strong> для сменных графиков используется дата начала работы для определения циклов</li>' : ''}</ul>
+                <strong>в„№пёЏ Р“СЂР°С„РёРє ${info.title}</strong>
+                <ul><li>${info.desc}</li><li>РЈС‡РёС‚С‹РІР°СЋС‚СЃСЏ РѕС„РёС†РёР°Р»СЊРЅС‹Рµ РїСЂР°Р·РґРЅРёРєРё Р Р¤</li>${type === '2_2' || type === '3_3' ? '<li><strong>Р’Р°Р¶РЅРѕ:</strong> РґР»СЏ СЃРјРµРЅРЅС‹С… РіСЂР°С„РёРєРѕРІ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР°С‚Р° РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ С†РёРєР»РѕРІ</li>' : ''}</ul>
             `;
         }
 
@@ -1048,25 +1067,25 @@
                 html += `
                     <div class="payday-card" data-idx="${i}">
                         <div class="payday-card-header">
-                            <span class="payday-card-title">Выплата ${i}</span>
-                            ${i > 1 ? `<button class="btn-remove" onclick="removePayday(${i})">✕ Удалить</button>` : ''}
+                            <span class="payday-card-title">Р’С‹РїР»Р°С‚Р° ${i}</span>
+                            ${i > 1 ? `<button class="btn-remove" onclick="removePayday(${i})">вњ• РЈРґР°Р»РёС‚СЊ</button>` : ''}
                         </div>
                         <div class="payday-card-fields">
                             <div class="payday-field">
-                                <label>📅 Дата выплаты (число)</label>
+                                <label>рџ“… Р”Р°С‚Р° РІС‹РїР»Р°С‚С‹ (С‡РёСЃР»Рѕ)</label>
                                 <input type="number" id="paydayDate${i}" value="${defaultPayday}" min="1" max="31" step="1" onchange="updatePaydayInfo(${i})">
                             </div>
                             <div class="payday-field">
-                                <label>📆 Период с (число)</label>
+                                <label>рџ“† РџРµСЂРёРѕРґ СЃ (С‡РёСЃР»Рѕ)</label>
                                 <input type="number" id="periodStart${i}" value="${defaultStart}" min="1" max="31" step="1">
                             </div>
                             <div class="payday-field">
-                                <label>📆 Период по (число)</label>
+                                <label>рџ“† РџРµСЂРёРѕРґ РїРѕ (С‡РёСЃР»Рѕ)</label>
                                 <input type="number" id="periodEnd${i}" value="${defaultPeriodEnd}" min="1" max="31" step="1">
                             </div>
                         </div>
                         <div class="payday-info" id="paydayInfo${i}">
-                            ${defaultPayday <= 15 ? '📅 Выплата до 15 числа → за ПРЕДЫДУЩИЙ месяц' : '📅 Выплата после 15 числа → за ТЕКУЩИЙ месяц'}
+                            ${defaultPayday <= 15 ? 'рџ“… Р’С‹РїР»Р°С‚Р° РґРѕ 15 С‡РёСЃР»Р° в†’ Р·Р° РџР Р•Р”Р«Р”РЈР©РР™ РјРµСЃСЏС†' : 'рџ“… Р’С‹РїР»Р°С‚Р° РїРѕСЃР»Рµ 15 С‡РёСЃР»Р° в†’ Р·Р° РўР•РљРЈР©РР™ РјРµСЃСЏС†'}
                         </div>
                     </div>
                 `;
@@ -1078,11 +1097,11 @@
             const paydayDate = parseInt(document.getElementById(`paydayDate${idx}`).value);
             const infoDiv = document.getElementById(`paydayInfo${idx}`);
             if (paydayDate <= 15) {
-                infoDiv.innerHTML = '📅 Выплата до 15 числа → за ПРЕДЫДУЩИЙ месяц';
+                infoDiv.innerHTML = 'рџ“… Р’С‹РїР»Р°С‚Р° РґРѕ 15 С‡РёСЃР»Р° в†’ Р·Р° РџР Р•Р”Р«Р”РЈР©РР™ РјРµСЃСЏС†';
                 infoDiv.style.background = '#fff3cd';
                 infoDiv.style.color = '#856404';
             } else {
-                infoDiv.innerHTML = '📅 Выплата после 15 числа → за ТЕКУЩИЙ месяц';
+                infoDiv.innerHTML = 'рџ“… Р’С‹РїР»Р°С‚Р° РїРѕСЃР»Рµ 15 С‡РёСЃР»Р° в†’ Р·Р° РўР•РљРЈР©РР™ РјРµСЃСЏС†';
                 infoDiv.style.background = '#d4edda';
                 infoDiv.style.color = '#155724';
             }
@@ -1124,16 +1143,16 @@
                 html += `
                     <div class="bonus-card" data-bonus-idx="${i}">
                         <div class="bonus-card-header">
-                            <span class="bonus-card-title">🎁 Премия ${i}</span>
-                            <button class="btn-remove" onclick="removeBonus(${i})">✕ Удалить</button>
+                            <span class="bonus-card-title">рџЋЃ РџСЂРµРјРёСЏ ${i}</span>
+                            <button class="btn-remove" onclick="removeBonus(${i})">вњ• РЈРґР°Р»РёС‚СЊ</button>
                         </div>
                         <div class="bonus-card-fields">
                             <div class="payday-field">
-                                <label>📅 Дата выплаты (число)</label>
+                                <label>рџ“… Р”Р°С‚Р° РІС‹РїР»Р°С‚С‹ (С‡РёСЃР»Рѕ)</label>
                                 <input type="number" id="bonusDate${i}" value="10" min="1" max="31" step="1">
                             </div>
                             <div class="payday-field">
-                                <label>💹 Процент от оклада (%)</label>
+                                <label>рџ’№ РџСЂРѕС†РµРЅС‚ РѕС‚ РѕРєР»Р°РґР° (%)</label>
                                 <input type="number" id="bonusPct${i}" value="10" min="0" max="1000" step="1">
                             </div>
                         </div>
@@ -1218,9 +1237,9 @@
             return false;
         }
 
-        // Функция для подсчета рабочих дней в периоде с учетом даты начала работы.
-        // ignoreWorkStart=true: считать с начала периода (для знаменателя дневной ставки — полный месяц)
-        // ignoreWorkStart=false (по умолчанию): клипировать период по дате начала работы (для числителя — фактически отработанные дни)
+        // Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕРґСЃС‡РµС‚Р° СЂР°Р±РѕС‡РёС… РґРЅРµР№ РІ РїРµСЂРёРѕРґРµ СЃ СѓС‡РµС‚РѕРј РґР°С‚С‹ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹.
+        // ignoreWorkStart=true: СЃС‡РёС‚Р°С‚СЊ СЃ РЅР°С‡Р°Р»Р° РїРµСЂРёРѕРґР° (РґР»СЏ Р·РЅР°РјРµРЅР°С‚РµР»СЏ РґРЅРµРІРЅРѕР№ СЃС‚Р°РІРєРё вЂ” РїРѕР»РЅС‹Р№ РјРµСЃСЏС†)
+        // ignoreWorkStart=false (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ): РєР»РёРїРёСЂРѕРІР°С‚СЊ РїРµСЂРёРѕРґ РїРѕ РґР°С‚Рµ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ (РґР»СЏ С‡РёСЃР»РёС‚РµР»СЏ вЂ” С„Р°РєС‚РёС‡РµСЃРєРё РѕС‚СЂР°Р±РѕС‚Р°РЅРЅС‹Рµ РґРЅРё)
         function getWorkDaysInPeriod(startDate, endDate, scheduleType, workStartDate, ignoreWorkStart) {
             let workDays = 0;
             let current = new Date(startDate);
@@ -1228,11 +1247,11 @@
             const workStart = new Date(workStartDate);
 
             if (!ignoreWorkStart) {
-                // Если период заканчивается до начала работы, возвращаем 0
+                // Р•СЃР»Рё РїРµСЂРёРѕРґ Р·Р°РєР°РЅС‡РёРІР°РµС‚СЃСЏ РґРѕ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹, РІРѕР·РІСЂР°С‰Р°РµРј 0
                 if (end < workStart) return 0;
             }
 
-            // Корректируем начало периода по дате начала работы (если нужно)
+            // РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј РЅР°С‡Р°Р»Рѕ РїРµСЂРёРѕРґР° РїРѕ РґР°С‚Рµ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ (РµСЃР»Рё РЅСѓР¶РЅРѕ)
             const actualStart = (!ignoreWorkStart && current < workStart) ? new Date(workStart) : new Date(current);
 
             if (scheduleType === '2_2' || scheduleType === '3_3') {
@@ -1266,14 +1285,14 @@
             return workDays;
         }
 
-        // Полное количество рабочих дней в месяце (знаменатель для дневной ставки — не зависит от даты начала работы)
+        // РџРѕР»РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‡РёС… РґРЅРµР№ РІ РјРµСЃСЏС†Рµ (Р·РЅР°РјРµРЅР°С‚РµР»СЊ РґР»СЏ РґРЅРµРІРЅРѕР№ СЃС‚Р°РІРєРё вЂ” РЅРµ Р·Р°РІРёСЃРёС‚ РѕС‚ РґР°С‚С‹ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹)
         function getMonthWorkDays(year, month, scheduleType, workStartDate) {
             const start = new Date(year, month, 1);
             const end = new Date(year, month + 1, 0);
             return getWorkDaysInPeriod(start, end, scheduleType, workStartDate, true);
         }
 
-        // Считает сумму всех выплат (зп + премии) за один месяц по заданным настройкам
+        // РЎС‡РёС‚Р°РµС‚ СЃСѓРјРјСѓ РІСЃРµС… РІС‹РїР»Р°С‚ (Р·Рї + РїСЂРµРјРёРё) Р·Р° РѕРґРёРЅ РјРµСЃСЏС† РїРѕ Р·Р°РґР°РЅРЅС‹Рј РЅР°СЃС‚СЂРѕР№РєР°Рј
         function computeMonthTotal(year, month, salary, scheduleType, workStartDateStr, paydaySettings, bonusSettings) {
             const totalMonthWorkDays = getMonthWorkDays(year, month, scheduleType, workStartDateStr);
             if (totalMonthWorkDays === 0) return 0;
@@ -1324,12 +1343,12 @@
             const calcYear = parseInt(document.getElementById('calcYear').value);
             
             if (!salary || salary <= 0) {
-                alert('Пожалуйста, укажите оклад');
+                alert('РџРѕР¶Р°Р»СѓР№СЃС‚Р°, СѓРєР°Р¶РёС‚Рµ РѕРєР»Р°Рґ');
                 return;
             }
             
             if (!workStartDateStr) {
-                alert('Пожалуйста, укажите дату начала работы');
+                alert('РџРѕР¶Р°Р»СѓР№СЃС‚Р°, СѓРєР°Р¶РёС‚Рµ РґР°С‚Сѓ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹');
                 return;
             }
             
@@ -1337,23 +1356,23 @@
             const year = calcYear;
             const month = calcMonth - 1;
             
-            // Полное количество рабочих дней в месяце (знаменатель для дневной ставки)
+            // РџРѕР»РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р±РѕС‡РёС… РґРЅРµР№ РІ РјРµСЃСЏС†Рµ (Р·РЅР°РјРµРЅР°С‚РµР»СЊ РґР»СЏ РґРЅРµРІРЅРѕР№ СЃС‚Р°РІРєРё)
             const totalMonthWorkDays = getMonthWorkDays(year, month, scheduleType, workStartDateStr);
 
-            // Фактически доступные дни сотрудника в месяце (с учётом даты начала работы) — для валидации
+            // Р¤Р°РєС‚РёС‡РµСЃРєРё РґРѕСЃС‚СѓРїРЅС‹Рµ РґРЅРё СЃРѕС‚СЂСѓРґРЅРёРєР° РІ РјРµСЃСЏС†Рµ (СЃ СѓС‡С‘С‚РѕРј РґР°С‚С‹ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹) вЂ” РґР»СЏ РІР°Р»РёРґР°С†РёРё
             const employeeMonthDays = getWorkDaysInPeriod(
                 new Date(year, month, 1), new Date(year, month + 1, 0),
                 scheduleType, workStartDateStr
             );
             if (employeeMonthDays === 0) {
-                const monthNames = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне', 'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
-                alert(`В ${monthNames[month]} нет рабочих дней для сотрудника, начавшего работу ${workStartDate.toLocaleDateString('ru-RU')}`);
+                const monthNames = ['СЏРЅРІР°СЂРµ', 'С„РµРІСЂР°Р»Рµ', 'РјР°СЂС‚Рµ', 'Р°РїСЂРµР»Рµ', 'РјР°Рµ', 'РёСЋРЅРµ', 'РёСЋР»Рµ', 'Р°РІРіСѓСЃС‚Рµ', 'СЃРµРЅС‚СЏР±СЂРµ', 'РѕРєС‚СЏР±СЂРµ', 'РЅРѕСЏР±СЂРµ', 'РґРµРєР°Р±СЂРµ'];
+                alert(`Р’ ${monthNames[month]} РЅРµС‚ СЂР°Р±РѕС‡РёС… РґРЅРµР№ РґР»СЏ СЃРѕС‚СЂСѓРґРЅРёРєР°, РЅР°С‡Р°РІС€РµРіРѕ СЂР°Р±РѕС‚Сѓ ${workStartDate.toLocaleDateString('ru-RU')}`);
                 return;
             }
 
             const dailyRate = salary / totalMonthWorkDays;
             
-            // Собираем настройки выплат
+            // РЎРѕР±РёСЂР°РµРј РЅР°СЃС‚СЂРѕР№РєРё РІС‹РїР»Р°С‚
             const payments = [];
             for (let i = 1; i <= paydayCounter; i++) {
                 const paydayDate = parseInt(document.getElementById(`paydayDate${i}`).value);
@@ -1362,18 +1381,18 @@
                 
                 if (isNaN(paydayDate) || isNaN(periodStart) || isNaN(periodEnd)) continue;
                 
-                // Проверяем, попадает ли дата выплаты в выбранный месяц
+                // РџСЂРѕРІРµСЂСЏРµРј, РїРѕРїР°РґР°РµС‚ Р»Рё РґР°С‚Р° РІС‹РїР»Р°С‚С‹ РІ РІС‹Р±СЂР°РЅРЅС‹Р№ РјРµСЃСЏС†
                 const lastDayOfMonth = getLastDayOfMonth(year, month);
                 if (paydayDate < 1 || paydayDate > lastDayOfMonth) continue;
                 
-                // ОПРЕДЕЛЯЕМ МЕСЯЦ ПЕРИОДА АВТОМАТИЧЕСКИ:
-                // Если дата выплаты <= 15 → за предыдущий месяц
-                // Если дата выплаты > 15 → за текущий месяц
+                // РћРџР Р•Р”Р•Р›РЇР•Рњ РњР•РЎРЇР¦ РџР•Р РРћР”Рђ РђР’РўРћРњРђРўРР§Р•РЎРљР:
+                // Р•СЃР»Рё РґР°С‚Р° РІС‹РїР»Р°С‚С‹ <= 15 в†’ Р·Р° РїСЂРµРґС‹РґСѓС‰РёР№ РјРµСЃСЏС†
+                // Р•СЃР»Рё РґР°С‚Р° РІС‹РїР»Р°С‚С‹ > 15 в†’ Р·Р° С‚РµРєСѓС‰РёР№ РјРµСЃСЏС†
                 let periodYear = year;
                 let periodMonth = month;
                 
                 if (paydayDate <= 15) {
-                    // Выплата за предыдущий месяц
+                    // Р’С‹РїР»Р°С‚Р° Р·Р° РїСЂРµРґС‹РґСѓС‰РёР№ РјРµСЃСЏС†
                     if (month === 0) {
                         periodYear = year - 1;
                         periodMonth = 11;
@@ -1381,45 +1400,45 @@
                         periodMonth = month - 1;
                     }
                 }
-                // иначе выплата за текущий месяц — periodMonth и periodYear остаются без изменений
+                // РёРЅР°С‡Рµ РІС‹РїР»Р°С‚Р° Р·Р° С‚РµРєСѓС‰РёР№ РјРµСЃСЏС† вЂ” periodMonth Рё periodYear РѕСЃС‚Р°СЋС‚СЃСЏ Р±РµР· РёР·РјРµРЅРµРЅРёР№
                 
-                // Корректируем periodEnd, если он больше последнего дня месяца периода
+                // РљРѕСЂСЂРµРєС‚РёСЂСѓРµРј periodEnd, РµСЃР»Рё РѕРЅ Р±РѕР»СЊС€Рµ РїРѕСЃР»РµРґРЅРµРіРѕ РґРЅСЏ РјРµСЃСЏС†Р° РїРµСЂРёРѕРґР°
                 const lastDayOfPeriodMonth = getLastDayOfMonth(periodYear, periodMonth);
                 if (periodEnd > lastDayOfPeriodMonth) {
                     periodEnd = lastDayOfPeriodMonth;
                 }
                 
-                // Создаем даты периода
+                // РЎРѕР·РґР°РµРј РґР°С‚С‹ РїРµСЂРёРѕРґР°
                 let periodStartDate, periodEndDate;
                 try {
                     periodStartDate = new Date(periodYear, periodMonth, periodStart);
                     periodEndDate = new Date(periodYear, periodMonth, periodEnd);
                     
-                    // Проверяем валидность дат
+                    // РџСЂРѕРІРµСЂСЏРµРј РІР°Р»РёРґРЅРѕСЃС‚СЊ РґР°С‚
                     if (periodStartDate > periodEndDate) continue;
                 } catch(e) {
                     continue;
                 }
                 
-                // Считаем рабочие дни в периоде с учетом даты начала работы
+                // РЎС‡РёС‚Р°РµРј СЂР°Р±РѕС‡РёРµ РґРЅРё РІ РїРµСЂРёРѕРґРµ СЃ СѓС‡РµС‚РѕРј РґР°С‚С‹ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹
                 const workDaysInPeriod = getWorkDaysInPeriod(periodStartDate, periodEndDate, scheduleType, workStartDateStr);
 
-                // Если нет рабочих дней в периоде, пропускаем выплату
+                // Р•СЃР»Рё РЅРµС‚ СЂР°Р±РѕС‡РёС… РґРЅРµР№ РІ РїРµСЂРёРѕРґРµ, РїСЂРѕРїСѓСЃРєР°РµРј РІС‹РїР»Р°С‚Сѓ
                 if (workDaysInPeriod === 0) continue;
 
-                // Дневная ставка считается по рабочим дням месяца ПЕРИОДА, а не месяца выплаты
+                // Р”РЅРµРІРЅР°СЏ СЃС‚Р°РІРєР° СЃС‡РёС‚Р°РµС‚СЃСЏ РїРѕ СЂР°Р±РѕС‡РёРј РґРЅСЏРј РјРµСЃСЏС†Р° РџР•Р РРћР”Рђ, Р° РЅРµ РјРµСЃСЏС†Р° РІС‹РїР»Р°С‚С‹
                 const periodTotalWorkDays = getMonthWorkDays(periodYear, periodMonth, scheduleType, workStartDateStr);
                 const periodDailyRate = periodTotalWorkDays > 0 ? salary / periodTotalWorkDays : 0;
                 const amount = periodDailyRate * workDaysInPeriod;
                 
-                const monthNames = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+                const monthNames = ['СЏРЅРІР°СЂСЏ', 'С„РµРІСЂР°Р»СЏ', 'РјР°СЂС‚Р°', 'Р°РїСЂРµР»СЏ', 'РјР°СЏ', 'РёСЋРЅСЏ', 'РёСЋР»СЏ', 'Р°РІРіСѓСЃС‚Р°', 'СЃРµРЅС‚СЏР±СЂСЏ', 'РѕРєС‚СЏР±СЂСЏ', 'РЅРѕСЏР±СЂСЏ', 'РґРµРєР°Р±СЂСЏ'];
                 
-                // Проверяем, была ли частичная отработка периода
+                // РџСЂРѕРІРµСЂСЏРµРј, Р±С‹Р»Р° Р»Рё С‡Р°СЃС‚РёС‡РЅР°СЏ РѕС‚СЂР°Р±РѕС‚РєР° РїРµСЂРёРѕРґР°
                 const isPartialPeriod = workStartDate > periodStartDate;
                 let periodNote = '';
                 if (isPartialPeriod) {
                     const startWorkFormatted = workStartDate.toLocaleDateString('ru-RU');
-                    periodNote = `<br><small style="opacity:0.8;">⚠️ Учтены только дни с ${startWorkFormatted} (начало работы)</small>`;
+                    periodNote = `<br><small style="opacity:0.8;">вљ пёЏ РЈС‡С‚РµРЅС‹ С‚РѕР»СЊРєРѕ РґРЅРё СЃ ${startWorkFormatted} (РЅР°С‡Р°Р»Рѕ СЂР°Р±РѕС‚С‹)</small>`;
                 }
                 
                 const isForPrevMonth = paydayDate <= 15;
@@ -1441,7 +1460,7 @@
                 });
             }
             
-            // Фильтруем выплаты, которые относятся к выбранному месяцу по дате выплаты
+            // Р¤РёР»СЊС‚СЂСѓРµРј РІС‹РїР»Р°С‚С‹, РєРѕС‚РѕСЂС‹Рµ РѕС‚РЅРѕСЃСЏС‚СЃСЏ Рє РІС‹Р±СЂР°РЅРЅРѕРјСѓ РјРµСЃСЏС†Сѓ РїРѕ РґР°С‚Рµ РІС‹РїР»Р°С‚С‹
             const validPayments = payments.filter(p => {
                 const paydayDateObj = new Date(year, month, p.paydayDate);
                 return paydayDateObj.getMonth() === month && paydayDateObj.getFullYear() === year;
@@ -1449,8 +1468,8 @@
             
             const totalAmount = validPayments.reduce((sum, p) => sum + p.amount, 0);
 
-            // Собираем премии
-            const monthNames2 = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+            // РЎРѕР±РёСЂР°РµРј РїСЂРµРјРёРё
+            const monthNames2 = ['СЏРЅРІР°СЂСЏ','С„РµРІСЂР°Р»СЏ','РјР°СЂС‚Р°','Р°РїСЂРµР»СЏ','РјР°СЏ','РёСЋРЅСЏ','РёСЋР»СЏ','Р°РІРіСѓСЃС‚Р°','СЃРµРЅС‚СЏР±СЂСЏ','РѕРєС‚СЏР±СЂСЏ','РЅРѕСЏР±СЂСЏ','РґРµРєР°Р±СЂСЏ'];
             const bonuses = [];
             for (let i = 1; i <= bonusCounter; i++) {
                 const bonusDate = parseInt(document.getElementById(`bonusDate${i}`).value);
@@ -1469,7 +1488,7 @@
             const totalBonusAmount = bonuses.reduce((sum, b) => sum + b.amount, 0);
             const grandTotal = totalAmount + totalBonusAmount;
 
-            // Собираем настройки выплат и премий для вспомогательных расчётов
+            // РЎРѕР±РёСЂР°РµРј РЅР°СЃС‚СЂРѕР№РєРё РІС‹РїР»Р°С‚ Рё РїСЂРµРјРёР№ РґР»СЏ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹С… СЂР°СЃС‡С‘С‚РѕРІ
             const paydaySettings = [];
             for (let i = 1; i <= paydayCounter; i++) {
                 const pd = parseInt(document.getElementById(`paydayDate${i}`).value);
@@ -1484,8 +1503,8 @@
                 if (!isNaN(bd) && !isNaN(bp) && bp > 0) bonusSettings.push({ bonusDate: bd, bonusPct: bp });
             }
 
-            // Показатель 1: сумма выплаченного с начала работы до сегодня
-            // (для текущего месяца — только выплаты, чья дата уже прошла)
+            // РџРѕРєР°Р·Р°С‚РµР»СЊ 1: СЃСѓРјРјР° РІС‹РїР»Р°С‡РµРЅРЅРѕРіРѕ СЃ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ РґРѕ СЃРµРіРѕРґРЅСЏ
+            // (РґР»СЏ С‚РµРєСѓС‰РµРіРѕ РјРµСЃСЏС†Р° вЂ” С‚РѕР»СЊРєРѕ РІС‹РїР»Р°С‚С‹, С‡СЊСЏ РґР°С‚Р° СѓР¶Рµ РїСЂРѕС€Р»Р°)
             const today = new Date();
             const todayDay = today.getDate();
             const todayMonth = today.getMonth();
@@ -1505,55 +1524,55 @@
                 if (curMonth > 11) { curMonth = 0; curYear++; }
             }
 
-            // Показатель 2: прогнозируемый суммарный доход за выбранный год
+            // РџРѕРєР°Р·Р°С‚РµР»СЊ 2: РїСЂРѕРіРЅРѕР·РёСЂСѓРµРјС‹Р№ СЃСѓРјРјР°СЂРЅС‹Р№ РґРѕС…РѕРґ Р·Р° РІС‹Р±СЂР°РЅРЅС‹Р№ РіРѕРґ
             let annual = 0;
             for (let m = 0; m < 12; m++) {
                 annual += computeMonthTotal(year, m, salary, scheduleType, workStartDateStr, paydaySettings, bonusSettings);
             }
 
-            // Отображение результатов
+            // РћС‚РѕР±СЂР°Р¶РµРЅРёРµ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
             document.getElementById('results').style.display = 'block';
             document.getElementById('workDays').textContent = totalMonthWorkDays;
-            document.getElementById('dailyRate').textContent = Math.round(dailyRate).toLocaleString('ru-RU') + ' ₽';
-            document.getElementById('totalPayments').textContent = Math.round(grandTotal).toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('dailyRate').textContent = Math.round(dailyRate).toLocaleString('ru-RU') + ' в‚Ѕ';
+            document.getElementById('totalPayments').textContent = Math.round(grandTotal).toLocaleString('ru-RU') + ' в‚Ѕ';
             document.getElementById('paymentCountResult').textContent = validPayments.length + bonuses.length;
-            document.getElementById('cumulativePayments').textContent = Math.round(cumulative).toLocaleString('ru-RU') + ' ₽';
-            document.getElementById('annualProjection').textContent = Math.round(annual).toLocaleString('ru-RU') + ' ₽';
+            document.getElementById('cumulativePayments').textContent = Math.round(cumulative).toLocaleString('ru-RU') + ' в‚Ѕ';
+            document.getElementById('annualProjection').textContent = Math.round(annual).toLocaleString('ru-RU') + ' в‚Ѕ';
             
             const monthStart = new Date(year, month, 1);
             const startInfo = workStartDate > monthStart ?
-                `<strong>📅 Начало работы:</strong> ${workStartDate.toLocaleDateString('ru-RU')}` : '';
+                `<strong>рџ“… РќР°С‡Р°Р»Рѕ СЂР°Р±РѕС‚С‹:</strong> ${workStartDate.toLocaleDateString('ru-RU')}` : '';
             document.getElementById('calendarInfo').innerHTML = startInfo;
             document.getElementById('calendarInfo').style.display = startInfo ? '' : 'none';
             
-            // Детали выплат
-            let detailsHtml = '<strong>📅 Детали выплат:</strong><br><br>';
+            // Р”РµС‚Р°Р»Рё РІС‹РїР»Р°С‚
+            let detailsHtml = '<strong>рџ“… Р”РµС‚Р°Р»Рё РІС‹РїР»Р°С‚:</strong><br><br>';
             if (validPayments.length > 0) {
                 validPayments.forEach(p => {
                     const periodBadge = p.isForPrevMonth ? 
-                        '<span class="badge badge-prev">За предыдущий месяц</span>' : 
-                        '<span class="badge badge-current">За текущий месяц</span>';
-                    const partialWarning = p.isPartial ? '<span style="background:#ffc107; color:#856404; padding:2px 6px; border-radius:12px; font-size:11px; margin-left:8px;">Частичный период</span>' : '';
+                        '<span class="badge badge-prev">Р—Р° РїСЂРµРґС‹РґСѓС‰РёР№ РјРµСЃСЏС†</span>' : 
+                        '<span class="badge badge-current">Р—Р° С‚РµРєСѓС‰РёР№ РјРµСЃСЏС†</span>';
+                    const partialWarning = p.isPartial ? '<span style="background:#ffc107; color:#856404; padding:2px 6px; border-radius:12px; font-size:11px; margin-left:8px;">Р§Р°СЃС‚РёС‡РЅС‹Р№ РїРµСЂРёРѕРґ</span>' : '';
                     detailsHtml += `
                         <div class="payment-detail-card">
-                            <strong>💰 Выплата ${p.paydayDisplay} ${periodBadge} ${partialWarning}</strong><br>
-                            📆 За период: с ${p.periodStart} по ${p.periodEnd} ${p.periodMonth} ${p.periodYear !== year ? p.periodYear : ''}<br>
-                            📊 Рабочих дней в месяце периода: ${p.periodTotalWorkDays} | Ставка за день: ${Math.round(p.periodDailyRate).toLocaleString('ru-RU')} ₽<br>
-                            📊 Рабочих дней в периоде: ${p.workDays}<br>
-                            💰 Сумма: ${Math.round(p.amount).toLocaleString('ru-RU')} ₽
+                            <strong>рџ’° Р’С‹РїР»Р°С‚Р° ${p.paydayDisplay} ${periodBadge} ${partialWarning}</strong><br>
+                            рџ“† Р—Р° РїРµСЂРёРѕРґ: СЃ ${p.periodStart} РїРѕ ${p.periodEnd} ${p.periodMonth} ${p.periodYear !== year ? p.periodYear : ''}<br>
+                            рџ“Љ Р Р°Р±РѕС‡РёС… РґРЅРµР№ РІ РјРµСЃСЏС†Рµ РїРµСЂРёРѕРґР°: ${p.periodTotalWorkDays} | РЎС‚Р°РІРєР° Р·Р° РґРµРЅСЊ: ${Math.round(p.periodDailyRate).toLocaleString('ru-RU')} в‚Ѕ<br>
+                            рџ“Љ Р Р°Р±РѕС‡РёС… РґРЅРµР№ РІ РїРµСЂРёРѕРґРµ: ${p.workDays}<br>
+                            рџ’° РЎСѓРјРјР°: ${Math.round(p.amount).toLocaleString('ru-RU')} в‚Ѕ
                             ${p.note}
                         </div>
                     `;
                 });
             } else if (bonuses.length === 0) {
-                detailsHtml += '<div class="payment-detail-card">Нет выплат в этом периоде</div>';
+                detailsHtml += '<div class="payment-detail-card">РќРµС‚ РІС‹РїР»Р°С‚ РІ СЌС‚РѕРј РїРµСЂРёРѕРґРµ</div>';
             }
             bonuses.forEach(b => {
                 detailsHtml += `
                     <div class="payment-detail-card">
-                        <strong>🎁 Премия ${b.bonusDisplay} <span class="badge badge-bonus">Премия</span></strong><br>
-                        💹 Процент от оклада: ${b.bonusPct}%<br>
-                        💰 Сумма: ${Math.round(b.amount).toLocaleString('ru-RU')} ₽
+                        <strong>рџЋЃ РџСЂРµРјРёСЏ ${b.bonusDisplay} <span class="badge badge-bonus">РџСЂРµРјРёСЏ</span></strong><br>
+                        рџ’№ РџСЂРѕС†РµРЅС‚ РѕС‚ РѕРєР»Р°РґР°: ${b.bonusPct}%<br>
+                        рџ’° РЎСѓРјРјР°: ${Math.round(b.amount).toLocaleString('ru-RU')} в‚Ѕ
                     </div>
                 `;
             });
@@ -1561,7 +1580,7 @@
             
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 
-            // Показываем календарь
+            // РџРѕРєР°Р·С‹РІР°РµРј РєР°Р»РµРЅРґР°СЂСЊ
             renderCalendar(year, month, scheduleType, workStartDateStr, validPayments, bonuses);
         }
 
@@ -1613,8 +1632,8 @@
             });
 
             // Month names for title
-            const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-            const weekDays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+            const monthNames = ['РЇРЅРІР°СЂСЊ', 'Р¤РµРІСЂР°Р»СЊ', 'РњР°СЂС‚', 'РђРїСЂРµР»СЊ', 'РњР°Р№', 'РСЋРЅСЊ', 'РСЋР»СЊ', 'РђРІРіСѓСЃС‚', 'РЎРµРЅС‚СЏР±СЂСЊ', 'РћРєС‚СЏР±СЂСЊ', 'РќРѕСЏР±СЂСЊ', 'Р”РµРєР°Р±СЂСЊ'];
+            const weekDays = ['РџРЅ', 'Р’С‚', 'РЎСЂ', 'Р§С‚', 'РџС‚', 'РЎР±', 'Р’СЃ'];
 
             calendarTitle.textContent = `${monthNames[month]} ${year}`;
 
@@ -1665,20 +1684,20 @@
 
                 // Add holiday badge
                 if (dayType === 'holiday') {
-                    html += '<div class="badge-holiday">ПР</div>';
+                    html += '<div class="badge-holiday">РџР </div>';
                 }
 
                 // Add payment badge
                 if (paymentsMap[dateKey]) {
                     const amounts = paymentsMap[dateKey];
                     const totalAmount = amounts.reduce((a, b) => a + b, 0);
-                    const shortAmount = totalAmount >= 1000 ? Math.round(totalAmount / 1000) + 'т' : totalAmount;
-                    html += `<div class="badge-payday">₽${shortAmount}</div>`;
+                    const shortAmount = totalAmount >= 1000 ? Math.round(totalAmount / 1000) + 'С‚' : totalAmount;
+                    html += `<div class="badge-payday">в‚Ѕ${shortAmount}</div>`;
                 }
 
                 // Add bonus indicator
                 if (bonusesMap[dateKey]) {
-                    html += '<div class="badge-payday" style="background: #8b5cf6;">🎁</div>';
+                    html += '<div class="badge-payday" style="background: #8b5cf6;">рџЋЃ</div>';
                 }
 
                 cell.innerHTML = html;
@@ -1697,10 +1716,10 @@
             document.getElementById('results').style.display = 'none';
         }
         
-        // Инициализация
+        // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date();
-            // Устанавливаем дату начала работы на 23 февраля для примера
+            // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РґР°С‚Сѓ РЅР°С‡Р°Р»Р° СЂР°Р±РѕС‚С‹ РЅР° 23 С„РµРІСЂР°Р»СЏ РґР»СЏ РїСЂРёРјРµСЂР°
             const exampleStartDate = new Date(today.getFullYear(), 1, 23);
             document.getElementById('workStartDate').value = formatDateLocal(exampleStartDate);
             document.getElementById('calcMonth').value = today.getMonth() + 1;
@@ -1722,11 +1741,11 @@
             document.getElementById('addPaydayBtn').onclick = addPayday;
             document.getElementById('addBonusBtn').onclick = addBonus;
 
-            // Инициализация темы
+            // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ С‚РµРјС‹
             initTheme();
             document.getElementById('themeToggle').onclick = toggleTheme;
 
-            // Инициализация авторизации
+            // РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Р°РІС‚РѕСЂРёР·Р°С†РёРё
             AUTH.updateUI();
 
             // Auto-load settings when logged in
@@ -1751,11 +1770,11 @@
         function applyTheme(theme) {
             if (theme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
-                document.getElementById('themeToggle').textContent = '☀️';
+                document.getElementById('themeToggle').textContent = 'вЂпёЏ';
                 localStorage.setItem('theme', 'dark');
             } else {
                 document.documentElement.removeAttribute('data-theme');
-                document.getElementById('themeToggle').textContent = '🌙';
+                document.getElementById('themeToggle').textContent = 'рџЊ™';
                 localStorage.setItem('theme', 'light');
             }
         }
@@ -1803,13 +1822,13 @@
                 const authBtn = document.getElementById('authButton');
 
                 if (this.isLoggedIn()) {
-                    authBtn.textContent = `👤 ${this.username}`;
+                    authBtn.textContent = `рџ‘¤ ${this.username}`;
                     authBtn.onclick = () => {
                         AUTH.logout();
-                        showToast('Вы вышли из аккаунта', 'success');
+                        showToast('Р’С‹ РІС‹С€Р»Рё РёР· Р°РєРєР°СѓРЅС‚Р°', 'success');
                     };
                 } else {
-                    authBtn.textContent = 'Войти';
+                    authBtn.textContent = 'Р’РѕР№С‚Рё';
                     authBtn.onclick = openAuthModal;
                 }
             }
@@ -1842,18 +1861,18 @@
         const VALID_REGEX = /^[a-zA-Z0-9]+$/;
 
         function validateUsername(username) {
-            if (!username) return 'Логин не должен быть пустым';
-            if (!VALID_REGEX.test(username)) return 'Только латинские буквы и цифры';
-            if (username.length < 3) return 'Минимум 3 символа';
-            if (username.length > 20) return 'Максимум 20 символов';
+            if (!username) return 'Р›РѕРіРёРЅ РЅРµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј';
+            if (!VALID_REGEX.test(username)) return 'РўРѕР»СЊРєРѕ Р»Р°С‚РёРЅСЃРєРёРµ Р±СѓРєРІС‹ Рё С†РёС„СЂС‹';
+            if (username.length < 3) return 'РњРёРЅРёРјСѓРј 3 СЃРёРјРІРѕР»Р°';
+            if (username.length > 20) return 'РњР°РєСЃРёРјСѓРј 20 СЃРёРјРІРѕР»РѕРІ';
             return '';
         }
 
         function validatePassword(password) {
-            if (!password) return 'Пароль не должен быть пустым';
-            if (!VALID_REGEX.test(password)) return 'Только латинские буквы и цифры';
-            if (password.length < 6) return 'Минимум 6 символов';
-            if (password.length > 20) return 'Максимум 20 символов';
+            if (!password) return 'РџР°СЂРѕР»СЊ РЅРµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј';
+            if (!VALID_REGEX.test(password)) return 'РўРѕР»СЊРєРѕ Р»Р°С‚РёРЅСЃРєРёРµ Р±СѓРєРІС‹ Рё С†РёС„СЂС‹';
+            if (password.length < 6) return 'РњРёРЅРёРјСѓРј 6 СЃРёРјРІРѕР»РѕРІ';
+            if (password.length > 20) return 'РњР°РєСЃРёРјСѓРј 20 СЃРёРјРІРѕР»РѕРІ';
             return '';
         }
 
@@ -1900,7 +1919,7 @@
                 const data = await res.json();
 
                 if (!res.ok) {
-                    showError('loginError', data.error || 'Ошибка входа');
+                    showError('loginError', data.error || 'РћС€РёР±РєР° РІС…РѕРґР°');
                     return;
                 }
 
@@ -1909,9 +1928,9 @@
                 closeAuthModal();
                 document.getElementById('loginUsername').value = '';
                 document.getElementById('loginPassword').value = '';
-                showToast('Успешный вход!', 'success');
+                showToast('РЈСЃРїРµС€РЅС‹Р№ РІС…РѕРґ!', 'success');
             } catch (err) {
-                showError('loginError', 'Ошибка сети');
+                showError('loginError', 'РћС€РёР±РєР° СЃРµС‚Рё');
                 console.error(err);
             }
         }
@@ -1944,7 +1963,7 @@
                 const data = await res.json();
 
                 if (!res.ok) {
-                    showError('registerError', data.error || 'Ошибка регистрации');
+                    showError('registerError', data.error || 'РћС€РёР±РєР° СЂРµРіРёСЃС‚СЂР°С†РёРё');
                     return;
                 }
 
@@ -1952,9 +1971,9 @@
                 closeAuthModal();
                 document.getElementById('regUsername').value = '';
                 document.getElementById('regPassword').value = '';
-                showToast('Аккаунт создан и вход выполнен!', 'success');
+                showToast('РђРєРєР°СѓРЅС‚ СЃРѕР·РґР°РЅ Рё РІС…РѕРґ РІС‹РїРѕР»РЅРµРЅ!', 'success');
             } catch (err) {
-                showError('registerError', 'Ошибка сети');
+                showError('registerError', 'РћС€РёР±РєР° СЃРµС‚Рё');
                 console.error(err);
             }
         }
@@ -1970,7 +1989,7 @@
 
         async function saveSettings() {
             if (!AUTH.isLoggedIn()) {
-                showToast('Пожалуйста, войдите в аккаунт', 'error');
+                showToast('РџРѕР¶Р°Р»СѓР№СЃС‚Р°, РІРѕР№РґРёС‚Рµ РІ Р°РєРєР°СѓРЅС‚', 'error');
                 return;
             }
 
@@ -1993,13 +2012,13 @@
 
                 if (!res.ok) {
                     const data = await res.json();
-                    showToast(data.error || 'Ошибка сохранения', 'error');
+                    showToast(data.error || 'РћС€РёР±РєР° СЃРѕС…СЂР°РЅРµРЅРёСЏ', 'error');
                     return;
                 }
 
-                showToast('Настройки сохранены!', 'success');
+                showToast('РќР°СЃС‚СЂРѕР№РєРё СЃРѕС…СЂР°РЅРµРЅС‹!', 'success');
             } catch (err) {
-                showToast('Ошибка сети', 'error');
+                showToast('РћС€РёР±РєР° СЃРµС‚Рё', 'error');
                 console.error(err);
             }
         }
